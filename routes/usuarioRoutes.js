@@ -1,7 +1,7 @@
 var express = require('express');
 var bcrypt = require('bcryptjs');
 var Usuario = require('../models/usuarioModel');
-var mdAutenticacion = require('../middlewares/autenticacion');
+//var mdAutenticacion = require('../middlewares/autenticacion');
 //inicialziar variables
 var app = express();
 
@@ -9,7 +9,11 @@ var app = express();
 
 //get usuarios
 app.get('/usuarios', (req, res, next)=>{
-  Usuario.find({},'nombre email img role')
+  var desde = req.query.desde || 0;
+  desde=Number(desde);
+  Usuario.find({},'nombre correo img role password')
+   .skip(desde)
+   .limit(5)
    .exec((err, usuario)=>{
     if(err){
       res.status(500).json({
@@ -18,17 +22,20 @@ app.get('/usuarios', (req, res, next)=>{
         errors:err
      });
     }
-    res.status(200).json({
-      ok:true,
-      mensaje:"peticion realizada correctamente",
-      usuarios:usuario
-   });
+    Usuario.count({}, (err, conteo)=>{
+      res.status(200).json({
+        ok:true,
+        mensaje:"peticion realizada correctamente",
+        usuarios:usuario,
+        total:conteo
+     });
+    })
   });
 });
 
 
 //post  crear usuario
-app.post('/', mdAutenticacion.verificarToken, (req, res, next)=>{
+app.post('/usuarios',  (req, res, next)=>{
 
   var body = req.body
   var usuario = new Usuario({
@@ -55,7 +62,7 @@ app.post('/', mdAutenticacion.verificarToken, (req, res, next)=>{
   });
 });
 //put actualizar usuarios
-app.put('/:id', mdAutenticacion.verificarToken, (req, res)=>{
+app.put('/:id',  (req, res)=>{
   var id = req.params.id;
   var body = req.body;
 
@@ -70,7 +77,7 @@ app.put('/:id', mdAutenticacion.verificarToken, (req, res)=>{
     if(!usuario){
       res.status(400).json({
         ok:false,
-        mensaje:"no existe el usuario",
+        mensaje:"no existe el usuario"
      });
     }
     //si si existe
@@ -98,7 +105,7 @@ app.put('/:id', mdAutenticacion.verificarToken, (req, res)=>{
   });
 })
 //delete usuario
-app.delete('/:id', mdAutenticacion.verificarToken, (req, res)=>{
+app.delete('/:id',  (req, res)=>{
   var id = req.params.id;
 
   Usuario.findByIdAndRemove(id, (err, usuarioBorrado)=>{

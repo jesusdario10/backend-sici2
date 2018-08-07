@@ -9,13 +9,14 @@ var app = express();
 //metodo de login
 app.post('/', (req, res)=>{
     var body = req.body;
+    
 
     Usuario.findOne({correo:body.correo}, (err, usuarioDB)=>{
-
+        console.log(usuarioDB);
         if(err){
             res.status(500).json({
               ok:false,
-              mensaje:"no se pudo busca correo",
+              mensaje:"no se pudo buscar correo",
               errors:err
             });
         }
@@ -37,7 +38,7 @@ app.post('/', (req, res)=>{
         }
         //crear un token
 
-        usuarioDB.password=":)";
+        usuarioDB.password=":)rrrrr";
         var token = jwt.sign({usuario:usuarioDB}, SEED, {expiresIn:14400});//4 horas
         
         res.status(200).json({

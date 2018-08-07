@@ -3,6 +3,14 @@ var mongoose = require('mongoose');
 var appRoutes = require('./routes/appRoutes');
 var UsuarioRoutes = require('./routes/usuarioRoutes.js');
 var LoginRoutes = require('./routes/loginRoutes');
+var hospitalesRoutes = require('./routes/hospitalesRoutes');
+var medicosRoutes = require('./routes/medicoRoutes');
+var busquedaGeneralRoutes = require('./routes/busquedaGeneralRoutes');
+var uploadRoutes = require('./routes/uploadRoutes');
+var mostrarImagenesRoutes = require('./routes/mostrarImagenesRoutes');
+var solicitudesRoutes = require('./routes/solicitudesRoutes');
+var itemSolicitudesRoutes = require('./routes/itemSolicitudesRoutes');
+
 var bodyParser = require('body-parser');
 
 //inicialziar variables
@@ -20,10 +28,15 @@ mongoose.connection.openUri('mongodb://localhost:27017/sici2', (err, res)=>{
 
 //middleware para las rutas
 app.use('/login', LoginRoutes);
-app.use('/usuarios', UsuarioRoutes);
+app.use('/', UsuarioRoutes);
+app.use('/', hospitalesRoutes);
+app.use('/', medicosRoutes);
+app.use('/busqueda', busquedaGeneralRoutes);
+app.use('/upload', uploadRoutes);
+app.use('/img', mostrarImagenesRoutes);
+app.use('/item', itemSolicitudesRoutes);
+app.use('/solicitud', solicitudesRoutes);
 app.use('/', appRoutes);
-
-
 
 //escuchar peticiones
 app.listen(3000, ()=>{
