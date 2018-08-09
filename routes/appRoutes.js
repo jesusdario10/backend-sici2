@@ -10,5 +10,5 @@ app.get('/', (req, res, next)=>{
        mensaje:"peticion realizada correctamente"
     })
 });
-
+//un mensaje para sincronisar los repositoriossss
 module.exports=app;
