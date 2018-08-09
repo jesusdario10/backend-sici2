@@ -1,12 +1,12 @@
 var express = require('express');
 var bcrypt = require('bcryptjs');
 var Hospitales = require('../models/hospitalesModels');
-//var mdAutenticacion = require('../middlewares/autenticacion');
+var mdAutenticacion = require('../middlewares/autenticacion');
 //inicialziar variables
 var app = express();
 
 //get Hospitales
-app.get('/hospitales', (req, res, next)=>{
+app.get('/hospitales',  (req, res, next)=>{
     var desde = req.query.desde;
     desde = Number(desde);
     Hospitales.find({})
@@ -33,7 +33,7 @@ app.get('/hospitales', (req, res, next)=>{
     });
   });
     //post  crear usuario
-    app.post('/hospitales', (req, res, next)=>{
+    app.post('/hospitales', mdAutenticacion.verificarToken, (req, res, next)=>{
 
         var body = req.body
         var hospital = new Hospitales({
@@ -58,7 +58,7 @@ app.get('/hospitales', (req, res, next)=>{
         });
     });
     //put actualizar usuarios
-    app.put('/hospitales/:id', (req, res)=>{
+    app.put('/hospitales/:id', mdAutenticacion.verificarToken, (req, res)=>{
         var id = req.params.id;
         var body = req.body;
     
@@ -100,7 +100,7 @@ app.get('/hospitales', (req, res, next)=>{
       });
     });
     //delete usuario
-    app.delete('/hospitales/:id', (req, res)=>{
+    app.delete('/hospitales/:id', mdAutenticacion.verificarToken, (req, res)=>{
         var id = req.params.id;
     
         Hospitales.findByIdAndRemove(id, (err, hospitalBorrado)=>{

@@ -1,11 +1,11 @@
 var express = require('express');
 var Medico = require('../models/medicosModels');
-//var mdAutenticacion = require('../middlewares/autenticacion');
+var mdAutenticacion = require('../middlewares/autenticacion');
 //inicialziar variables
 var app = express();
 
 
-app.get('/medicoprueba', (req, res, next)=>{
+app.get('/medicoprueba',  (req, res, next)=>{
     res.status(200).json({
         ok:true,
         mensaje:"ruta correcta"
@@ -40,7 +40,7 @@ app.get('/medico', (req, res, next)=>{
     });
   });
     //post  crear usuario
-    app.post('/medico',  (req, res, next)=>{
+    app.post('/medico', mdAutenticacion.verificarToken,  (req, res, next)=>{
 
         var body = req.body
         var medico = new Medico({
@@ -65,7 +65,7 @@ app.get('/medico', (req, res, next)=>{
         });
     });
     //put actualizar usuarios
-    app.put('/medico/:id',  (req, res)=>{
+    app.put('/medico/:id', mdAutenticacion.verificarToken,   (req, res)=>{
         var id = req.params.id;
         var body = req.body;
     
@@ -107,7 +107,7 @@ app.get('/medico', (req, res, next)=>{
       });
     });
     //delete usuario
-    app.delete('/medico/:id',  (req, res)=>{
+    app.delete('/medico/:id', mdAutenticacion.verificarToken,  (req, res)=>{
         var id = req.params.id;
     
         Medico.findByIdAndRemove(id, (err, medicoBorrado)=>{

@@ -1,7 +1,7 @@
 var express = require('express');
 var bcrypt = require('bcryptjs');
 var Usuario = require('../models/usuarioModel');
-//var mdAutenticacion = require('../middlewares/autenticacion');
+var mdAutenticacion = require('../middlewares/autenticacion');
 //inicialziar variables
 var app = express();
 
@@ -54,7 +54,7 @@ app.post('/usuarios',  (req, res, next)=>{
         errors:err
      });
     }
-    res.status(201).send({
+    res.status(200).send({
       usuarioGuardado :usuarioGuardado,
       usuarioToken: req.usuario,
       ok:true
@@ -62,7 +62,7 @@ app.post('/usuarios',  (req, res, next)=>{
   });
 });
 //put actualizar usuarios
-app.put('/:id',  (req, res)=>{
+app.put('/:id', mdAutenticacion.verificarToken, (req, res)=>{
   var id = req.params.id;
   var body = req.body;
 
@@ -105,7 +105,7 @@ app.put('/:id',  (req, res)=>{
   });
 })
 //delete usuario
-app.delete('/:id',  (req, res)=>{
+app.delete('/:id', mdAutenticacion.verificarToken, (req, res)=>{
   var id = req.params.id;
 
   Usuario.findByIdAndRemove(id, (err, usuarioBorrado)=>{

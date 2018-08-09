@@ -3,16 +3,15 @@ var bcrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
 var Usuario = require('../models/usuarioModel');
 var SEED = require('../config/config').SEED;
+var GoogleAuth = require('google-auth-library');
 
 var app = express();
 
-//metodo de login
+
 app.post('/', (req, res)=>{
     var body = req.body;
-    
-
     Usuario.findOne({correo:body.correo}, (err, usuarioDB)=>{
-        console.log(usuarioDB);
+        
         if(err){
             res.status(500).json({
               ok:false,
@@ -43,7 +42,7 @@ app.post('/', (req, res)=>{
         
         res.status(200).json({
             ok:true,
-            body:body,
+            usuario:usuarioDB,
             token:token
         })
 
