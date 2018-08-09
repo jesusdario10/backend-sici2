@@ -62,7 +62,7 @@ app.post('/usuarios',  (req, res, next)=>{
   });
 });
 //put actualizar usuarios
-app.put('/:id', mdAutenticacion.verificarToken, (req, res)=>{
+app.put('/usuarios/:id',  (req, res)=>{
   var id = req.params.id;
   var body = req.body;
 
