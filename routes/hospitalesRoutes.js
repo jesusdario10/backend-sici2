@@ -11,9 +11,9 @@ app.get('/hospitales',  (req, res, next)=>{
     desde = Number(desde);
     Hospitales.find({})
      .skip(desde)
-     .limit(5)
+     
      .populate('usuario', 'nombre correo')
-     .exec((err, usuario)=>{
+     .exec((err, hospitales)=>{
       if(err){
         res.status(500).json({
           ok:false,
@@ -25,22 +25,54 @@ app.get('/hospitales',  (req, res, next)=>{
         res.status(200).json({
             ok:true,
             mensaje:"peticion realizada correctamente",
-            usuarios:usuario,
+            hospitales:hospitales,
             total:conteo
          });
       })
 
     });
   });
+  //get Hospital es decir uno solo
+    app.get('/hospital/:id',  (req, res, next)=>{
+        var id = req.params.id;
+        
+        Hospitales.findById(id)
+            .populate('usuario', 'nombre img email')
+            .exec((err, hospital)=>{
+                if(err){
+                    res.status(500).json({
+                    ok:false,
+                    mensaje:"no se pudieron traer los datos",
+                    errors:err
+                    });
+                }
+                if(!hospital){
+                    res.status(400).json({
+                    ok:false,
+                    mensaje:"no existe",
+                    errors:err
+                    });
+                }
+                res.status(200).json({
+                    ok:true,
+                    hospital:hospital
+                });       
+
+            })
+
+   
+    });
     //post  crear usuario
-    app.post('/hospitales', mdAutenticacion.verificarToken, (req, res, next)=>{
+    app.post('/hospitales', mdAutenticacion.verificarToken,  (req, res, next)=>{
 
         var body = req.body
         var hospital = new Hospitales({
-          nombre : body.nombre,
-          img: null,
-          usuario: req.usuario._id
+            nombre : body.nombre,
+            img : body.imagen,
+            usuario: req.usuario._id,  
         });
+        console.log(hospital.img);
+        
         
         hospital.save((err, hospitalGuardado)=>{
           if(err){
@@ -51,7 +83,7 @@ app.get('/hospitales',  (req, res, next)=>{
           });
           }
           res.status(201).send({
-              usuarioGuardado :hospitalGuardado,
+              hospitalGuardado :hospitalGuardado,
               usuarioToken: req.usuario,
               ok:true
           });

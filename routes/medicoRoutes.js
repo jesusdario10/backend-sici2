@@ -18,7 +18,7 @@ app.get('/medico', (req, res, next)=>{
     desde =Number(desde);
     Medico.find({})
      .skip(desde)
-     .limit(5)   
+      
      .populate('usuario', 'nombre correo')
      .populate('hospital')
      .exec((err, medicos)=>{

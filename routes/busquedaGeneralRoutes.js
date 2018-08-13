@@ -31,7 +31,7 @@ app.get('/todo/:busqueda', (req, res, next)=>{
 // Busqueda Especifica
 // ==================================================
 
-app.get('/coleccion/:tabla/:busqueda', (req, res)=>{
+app.get('/:tabla/:busqueda', (req, res)=>{
   var tabla = req.params.tabla;
   console.log(tabla);
   var busqueda = req.params.busqueda;

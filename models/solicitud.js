@@ -6,7 +6,11 @@ var Schema = mongoose.Schema;
 //Schema de solicitudes
 
 var SolicitudSchema = Schema({
-    numero: {type:String}
+    numero: {type:String},
+    item:[{
+        campo1:{type:String},
+        campo2:{type:String}
+    }]
 });
 
 //exportando el Schema
