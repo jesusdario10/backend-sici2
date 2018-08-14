@@ -33,6 +33,7 @@ app.get('/', (req, res, next)=>{
         var body = req.body
         var solicitud = new Solicitud({
           numero : body.numero,
+          medico : body.medico,
           item:[{
               campo1 : body.campo1,
               campo2 : body.campo2
@@ -76,11 +77,12 @@ app.get('/', (req, res, next)=>{
         solicitud.numero = body.numero;
         var campo1 = body.campo1;
         var campo2 = body.campo2;
-        console.log(campo1, campo2);
+        solicitud.medico = body.medico;
+        console.log(solicitud.medico);
+        
         var item = {
             "campo1":campo1,
             "campo2":campo2
-
         }
         
 
