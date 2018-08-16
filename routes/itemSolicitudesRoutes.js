@@ -6,9 +6,9 @@ var app = express();
 
 
 
-//get usuarios
+//get items
 app.get('/', (req, res, next)=>{
-
+    
     Item.find({})
      .populate('nosolicitud', 'numero')
      .exec((err, items)=>{
@@ -29,12 +29,44 @@ app.get('/', (req, res, next)=>{
       });
     });
   });
-    //post  crear item
-    app.post('/',  (req, res, next)=>{
+  //obtener el o los items de una solicitud
+  //get usuarios
+app.get('/:id', (req, res, next)=>{
+    var solicitud = req.params.id
+    var sumatoria = 0;
+    Item.find({solicitud:solicitud})
+     
+     .exec((err, items)=>{
+      if(err){
+        res.status(500).json({
+          ok:false,
+          mensaje:"no se pudieron traer los datos",
+          errors:err
+       });
+      }
+      for(let i=0; i<=items.length; i++){
+          sumatoria+=parseInt(items.cantidad)
+          
+      }
+      console.log(sumatoria);
+        res.status(200).json({
+          ok:true,
+          mensaje:"peticion realizada correctamente",
+          items:items,
+          sumatoria:sumatoria
+          
+       });
+     
+    });
+  });
 
-        var body = req.body
+    //post  crear item
+    app.post('/:id',  (req, res, next)=>{
+        var id_solicitud = req.params.id;
+        var body = req.body;
+        var solicitud = req.params.id
         var item = new Item({
-          nosolicitud : body.nosolicitud,
+          
           tipovalvula : body.tipovalvula,
           tiposello : body.tiposello,
           diametro : body.diametro,
@@ -45,8 +77,11 @@ app.get('/', (req, res, next)=>{
           prioridad : body.prioridad,
           dificultad : body.dificultad,
           sitio : body.sitio,
-          cantidad : body.cantidad
+          cantidad : body.cantidad,
+          solicitud : solicitud
 
+          
+          
         });
         
         item.save((err, itemGuardado)=>{

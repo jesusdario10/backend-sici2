@@ -32,12 +32,7 @@ app.get('/', (req, res, next)=>{
     app.post('/',  (req, res, next)=>{
         var body = req.body
         var solicitud = new Solicitud({
-          numero : body.numero,
-          medico : body.medico,
-          item:[{
-              campo1 : body.campo1,
-              campo2 : body.campo2
-          }]
+          nombre : body.nombre
         });
         solicitud.save((err, solicitudGuardada)=>{
           if(err){
@@ -74,20 +69,7 @@ app.get('/', (req, res, next)=>{
           });
         }
         //si si existe
-        solicitud.numero = body.numero;
-        var campo1 = body.campo1;
-        var campo2 = body.campo2;
-        solicitud.medico = body.medico;
-        console.log(solicitud.medico);
-        
-        var item = {
-            "campo1":campo1,
-            "campo2":campo2
-        }
-        
-
-        solicitud.item.push(item);
-        
+        solicitud.nombre = body.nombre;
         solicitud.save( (err, solicitudActualizado)=>{
             if(err){
                 res.status(400).json({
