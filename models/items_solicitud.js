@@ -19,6 +19,7 @@ var Item_SolicitudSchema = Schema({
     sitio: {type: String},
     cantidad: {type: Number},
     solicitud: {type: Schema.Types.ObjectId,	ref: 'Solicitud', required:true },
+    valor:{type: Number}
     
 
 });

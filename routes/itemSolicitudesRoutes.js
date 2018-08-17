@@ -29,11 +29,46 @@ app.get('/', (req, res, next)=>{
       });
     });
   });
+  //obtener un solo item
+app.get('/:id/:id2', (req, res, next)=>{
+    var id2 = req.params.id2
+    var sumatoria = 0;
+    var cantidad = 0;
+    var valor_total = 0;
+    
+    Item.find({_id:id2})
+     .exec((err, items)=>{
+      if(err){
+        res.status(500).json({
+          ok:false,
+          mensaje:"no se pudieron traer los datos",
+          errors:err
+       });
+      }
+      for (let index = 0; index < items.length; index++) {
+        cantidad+= items[index].cantidad;
+        valor_total+= items[index].valor;   
+    }
+      Item.count({}, (err, conteo)=>{
+        res.status(200).json({
+          ok:true,
+          mensaje:"peticion realizada correctamente",
+          items:items,
+          total:conteo,
+          sumatoria:cantidad,
+          valorTotal:valor_total
+       });
+      });
+    });
+  });
   //obtener el o los items de una solicitud
   //get usuarios
 app.get('/:id', (req, res, next)=>{
     var solicitud = req.params.id
     var sumatoria = 0;
+    var cantidad = 0;
+    var valor_total = 0;
+    
     Item.find({solicitud:solicitud})
      
      .exec((err, items)=>{
@@ -44,16 +79,18 @@ app.get('/:id', (req, res, next)=>{
           errors:err
        });
       }
-      for(let i=0; i<=items.length; i++){
-          sumatoria+=parseInt(items.cantidad)
-          
+      for (let index = 0; index < items.length; index++) {
+          cantidad+= items[index].cantidad;
+          valor_total+= items[index].valor;   
       }
-      console.log(sumatoria);
+      
         res.status(200).json({
           ok:true,
           mensaje:"peticion realizada correctamente",
           items:items,
-          sumatoria:sumatoria
+          sumatoria:cantidad,
+          valorTotal:valor_total
+          
           
        });
      
@@ -64,7 +101,8 @@ app.get('/:id', (req, res, next)=>{
     app.post('/:id',  (req, res, next)=>{
         var id_solicitud = req.params.id;
         var body = req.body;
-        var solicitud = req.params.id
+        var solicitud = req.params.id;
+        var random = Math.round(Math.random()*(1000000 - 500000)+500000);
         var item = new Item({
           
           tipovalvula : body.tipovalvula,
@@ -78,7 +116,8 @@ app.get('/:id', (req, res, next)=>{
           dificultad : body.dificultad,
           sitio : body.sitio,
           cantidad : body.cantidad,
-          solicitud : solicitud
+          solicitud : solicitud,
+          valor:random
 
           
           
@@ -100,11 +139,11 @@ app.get('/:id', (req, res, next)=>{
         });
     });
     //put actualizar usuarios
-    app.put('/:id',  (req, res)=>{
-        var id = req.params.id;
+    app.put('/:id/:id2',  (req, res)=>{
+        var id2 = req.params.id2;
         var body = req.body;
     
-        Item.findById(id, (err, item)=>{
+        Item.findById(id2, (err, item)=>{
         if(err){
             res.status(500).json({
             ok:false,
@@ -151,10 +190,10 @@ app.get('/:id', (req, res, next)=>{
       });
     });
     //delete usuario
-    app.delete('/:id',  (req, res)=>{
-        var id = req.params.id;
+    app.delete('/:id/:id2',  (req, res)=>{
+        var id2 = req.params.id2;
     
-        Item.findByIdAndRemove(id, (err, itemBorrado)=>{
+        Item.findByIdAndRemove(id2, (err, itemBorrado)=>{
         if(err){
             res.status(400).json({
             ok:false,
