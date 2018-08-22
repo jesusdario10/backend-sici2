@@ -7,8 +7,42 @@ var app = express();
 
 
 
-//get solicitudes
+//get solicitud para añadir items
+app.get('/:id', (req, res, next)=>{
+   var solicitud = req.params.id;
+    var valor_total = 0;
+
+    Solicitud.find({_id:solicitud})
+     .exec((err, solicitudes)=>{
+      if(err){
+        res.status(500).json({
+          ok:false,
+          mensaje:"no se pudieron traer los datos",
+          errors:err
+       });
+      }
+      for (let index = 0; index < solicitudes.length; index ++) {
+
+        for (let index2 = 0; index2 < solicitudes[index].item.length; index2 ++) {
+            valor_total= valor_total + solicitudes[index].item[index2].valor;   
+          }
+        
+      }
+      Solicitud.count({}, (err, conteo)=>{
+        res.status(200).json({
+          ok:true,
+          mensaje:"peticion realizada correctamente",
+          solicitudes:solicitudes,
+          total:conteo,
+          valorTotal:valor_total
+       });
+      });
+    });
+  });
+  //get solicitudes mostrar todas
 app.get('/', (req, res, next)=>{
+    var valor_total = 0;
+
     Solicitud.find({})
      .exec((err, solicitudes)=>{
       if(err){
@@ -18,19 +52,22 @@ app.get('/', (req, res, next)=>{
           errors:err
        });
       }
+
       Solicitud.count({}, (err, conteo)=>{
         res.status(200).json({
           ok:true,
           mensaje:"peticion realizada correctamente",
           solicitudes:solicitudes,
           total:conteo
+          
        });
       });
     });
   });
     //post  crear solicitud
     app.post('/',  (req, res, next)=>{
-        var body = req.body
+        var body = req.body;
+        
         var solicitud = new Solicitud({
           nombre : body.nombre
         });
@@ -50,11 +87,14 @@ app.get('/', (req, res, next)=>{
         });
     });
     //put actualizar solicitudes
-    app.put('/:id',  (req, res)=>{
+    app.post('/:id',  (req, res)=>{
         var id = req.params.id;
         var body = req.body;
-    
+       
+        
+
         Solicitud.findById(id, (err, solicitud)=>{
+
         if(err){
             res.status(500).json({
             ok:false,
@@ -68,8 +108,8 @@ app.get('/', (req, res, next)=>{
             mensaje:"no existe el usuario",
           });
         }
-        //si si existe
-        solicitud.nombre = body.nombre;
+        //si si existe 
+        solicitud.item.push(body.item);
         solicitud.save( (err, solicitudActualizado)=>{
             if(err){
                 res.status(400).json({
@@ -88,7 +128,7 @@ app.get('/', (req, res, next)=>{
         });
       });
     });
-    //delete usuario
+    //delete solicitud
     app.delete('/solicitud/:id',  (req, res)=>{
         var id = req.params.id;
     
@@ -107,5 +147,26 @@ app.get('/', (req, res, next)=>{
         });
       });
     });
+    //delete item de la solicitud
+    app.post('/solicitud/:id/',  (req, res)=>{
+        var id = req.params.id;
+        var doc =  parent.children.id(_id);
+    
+        Solicitud.findById(id, (err, solicitud)=>{
+        if(err){
+            res.status(400).json({
+            ok:false,
+            mensaje:"no se pudo borrar solicitud",
+            errors:err
+        });
+        }
+        res.status(200).json({
+            ok:true,
+            mensaje:"peticion realizada correctamente",
+            solicitud:solicitudBorrada
+        });
+      });
+    });
+
 
 module.exports=app;

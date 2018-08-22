@@ -118,9 +118,6 @@ app.get('/:id', (req, res, next)=>{
           cantidad : body.cantidad,
           solicitud : solicitud,
           valor:random
-
-          
-          
         });
         
         item.save((err, itemGuardado)=>{
@@ -138,12 +135,13 @@ app.get('/:id', (req, res, next)=>{
           });
         });
     });
-    //put actualizar usuarios
-    app.put('/:id/:id2',  (req, res)=>{
-        var id2 = req.params.id2;
+    //put insertar item
+    app.put('/:id',  (req, res)=>{
+        var id = req.params.id;
         var body = req.body;
+        console.log(body);
     
-        Item.findById(id2, (err, item)=>{
+        Item.findById(id, (err, item)=>{
         if(err){
             res.status(500).json({
             ok:false,
