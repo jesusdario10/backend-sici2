@@ -20,7 +20,11 @@ var SolicitudSchema = Schema({
         cantidad:{type:Number},
         valor:{type:Number}
         
-    }]
+    }],
+    valorTotal:{type:Number},
+    nombre:{type:String},
+    estado: {type:String, default:"CREADA"}
+    
 });
 
 //exportando el Schema

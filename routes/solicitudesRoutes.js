@@ -11,6 +11,7 @@ var app = express();
 app.get('/:id', (req, res, next)=>{
    var solicitud = req.params.id;
     var valor_total = 0;
+    
 
     Solicitud.find({_id:solicitud})
      .exec((err, solicitudes)=>{
@@ -21,20 +22,25 @@ app.get('/:id', (req, res, next)=>{
           errors:err
        });
       }
-      for (let index = 0; index < solicitudes.length; index ++) {
+      /*for (let index = 0; index < solicitudes.length; index ++) {
 
         for (let index2 = 0; index2 < solicitudes[index].item.length; index2 ++) {
             valor_total= valor_total + solicitudes[index].item[index2].valor;   
           }
         
-      }
+      }*/
+      console.log("que viene por aqui");
+      console.log(solicitudes[0].valorTotal);
+      valor_total = solicitudes[0].valorTotal
+
       Solicitud.count({}, (err, conteo)=>{
         res.status(200).json({
           ok:true,
           mensaje:"peticion realizada correctamente",
           solicitudes:solicitudes,
           total:conteo,
-          valorTotal:valor_total
+          valorTotal:valor_total,
+          valorTotal2:valor_total
        });
       });
     });
@@ -67,6 +73,7 @@ app.get('/', (req, res, next)=>{
     //post  crear solicitud
     app.post('/',  (req, res, next)=>{
         var body = req.body;
+
         
         var solicitud = new Solicitud({
           nombre : body.nombre
@@ -90,9 +97,9 @@ app.get('/', (req, res, next)=>{
     app.post('/:id',  (req, res)=>{
         var id = req.params.id;
         var body = req.body;
-       
-        
-
+        console.log(body);
+        console.log("lo que biene en valor total $$$$$$$$$$$$$$$$$$$");
+        console.log(body.valorTotal);
         Solicitud.findById(id, (err, solicitud)=>{
 
         if(err){
@@ -110,6 +117,12 @@ app.get('/', (req, res, next)=>{
         }
         //si si existe 
         solicitud.item.push(body.item);
+        if(solicitud.valorTotal==0 || solicitud.valorTotal=='' || solicitud.valorTotal ==undefined){
+            solicitud.valorTotal=body.valorTotal;
+        }else{
+            solicitud.valorTotal =solicitud.valorTotal+ body.valorTotal;
+        }
+        
         solicitud.save( (err, solicitudActualizado)=>{
             if(err){
                 res.status(400).json({

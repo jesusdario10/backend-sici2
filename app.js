@@ -10,6 +10,8 @@ var uploadRoutes = require('./routes/uploadRoutes');
 var mostrarImagenesRoutes = require('./routes/mostrarImagenesRoutes');
 var solicitudesRoutes = require('./routes/solicitudesRoutes');
 var itemSolicitudesRoutes = require('./routes/itemSolicitudesRoutes');
+var tareaRoutes = require('./routes/tareaRoutes');
+var tipomttoRoutes = require('./routes/tipomtto');
 
 var bodyParser = require('body-parser');
 
@@ -45,6 +47,8 @@ app.use('/upload', uploadRoutes);
 app.use('/img', mostrarImagenesRoutes);
 app.use('/item', itemSolicitudesRoutes);
 app.use('/solicitud', solicitudesRoutes);
+app.use('/tarea', tareaRoutes);
+app.use('/tipomtto', tipomttoRoutes);
 app.use('/', appRoutes);
 
 //escuchar peticiones
