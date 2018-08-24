@@ -6,7 +6,9 @@ var app = express();
 app.get('/',  (req, res, next)=>{
 
     Tarea.find({})
-        .populate('tipomtto', 'nombre')
+        .populate('tipomtto1', 'nombre')
+        .populate('tipomtto2', 'nombre')
+        .populate('tipomtto3', 'nombre')
         .exec((err, tareas)=>{
             if(err){
                 res.status(400).json({
@@ -32,7 +34,10 @@ app.post('/', (req, res, next)=>{
     var body = req.body;
     var tarea = new Tarea({
         nombre:body.nombre,
-        tipomtto:body.tipomtto
+        tipomtto1:body.tipomtto1,
+        tipomtto2:body.tipomtto2,
+        tipomtto3:body.tipomtto3,
+        valor:body.valor
     });
     //guardando la tarea
     tarea.save((err, tareaGuardada)=>{

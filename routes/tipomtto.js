@@ -27,7 +27,7 @@ app.get('/',  (req, res, next)=>{
         });
 });
 app.post('/',  (req, res, next)=>{
-    var body = req.body
+    var body = req.body;
     var tipoMtto = new TipoMtto({
         nombre : body.nombre
     });
