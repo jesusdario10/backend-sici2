@@ -93,7 +93,7 @@ app.get('/', (req, res, next)=>{
           });
         });
     });
-    //put actualizar solicitudes
+    //post para insertar itens en las solicitudes
     app.post('/:id',  (req, res)=>{
         var id = req.params.id;
         var body = req.body;
@@ -141,6 +141,48 @@ app.get('/', (req, res, next)=>{
         });
       });
     });
+    //actualizar estado de una solicitud
+    app.put('/:id', (req, res)=>{
+        var id = req.params.id;
+        var body = req.body;
+        console.log(body);
+        Solicitud.findById(id, (err, solicitudActualizada)=>{
+            if(err){
+                res.status(400).json({
+                    ok:false,
+                    mensaje:"no se pudo acceder a la base de datos",
+                    solicitud:solicitudActualizada
+                })
+            }
+            if(!solicitudActualizada){
+                res.status(500).json({
+                    ok:false,
+                    mensaje:"no se encontro la solicitud en la db",
+                    err:err
+                })
+            }
+            console.log("el estado es");
+            console.log(solicitudActualizada);
+            solicitudActualizada.estado = body.estado
+            solicitudActualizada.save( (err, solicitudActualizada)=>{
+                if(err){
+                    res.status(400).json({
+                        ok:false,
+                        mensaje:"Error al actualizar solicitud",
+                        errors:err
+                    });
+                }
+            
+                if(solicitudActualizada){
+                    res.status(201).send({
+                        solicitud: solicitudActualizada,
+                        ok:true
+                    });
+                }
+            });
+
+        })
+    })
     //delete solicitud
     app.delete('/solicitud/:id',  (req, res)=>{
         var id = req.params.id;
