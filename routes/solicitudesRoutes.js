@@ -162,7 +162,7 @@ app.get('/', (req, res, next)=>{
                 })
             }
             console.log("el estado es");
-            console.log(solicitudActualizada);
+            
             solicitudActualizada.estado = body.estado
             solicitudActualizada.save( (err, solicitudActualizada)=>{
                 if(err){
@@ -184,7 +184,7 @@ app.get('/', (req, res, next)=>{
         })
     })
     //delete solicitud
-    app.delete('/solicitud/:id',  (req, res)=>{
+    app.delete('/:id',  (req, res)=>{
         var id = req.params.id;
     
         Solicitud.findByIdAndRemove(id, (err, solicitudBorrada)=>{
