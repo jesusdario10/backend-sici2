@@ -2,6 +2,7 @@ var express = require('express');
 var Hospital = require('../models/hospitalesModels');
 var Medicos = require('../models/medicosModels');
 var Usuarios = require('../models/usuarioModel');
+var Clientes = require('../models/clienteModel');
 
 var app = express();
 
@@ -48,6 +49,9 @@ app.get('/:tabla/:busqueda', (req, res)=>{
     case 'hospitales':
         promesa = buscarHospitales(busqueda, regex);
         break; 
+    case 'clientes':
+        promesa = buscarClientes(busqueda, regex);
+        break;     
     //en caso de que no se ingrese ninguno de los anteriores
     default:
         return  res.status(400).json({
@@ -101,6 +105,19 @@ function buscarUsuarios(busqueda, regex){
           reject('Error al cargar usuarios '+ err);
         }else{
           resolve(usuarios);
+        }
+      });
+  });
+}
+function buscarClientes(busqueda, regex){
+  return new Promise((resolve, reject)=>{
+    Clientes.find({})
+      .or([{'nombre':regex}, {'email':regex}])
+      .exec((err, clientes)=>{
+        if(err){
+          reject('Error al cargar clientes '+ err);
+        }else{
+          resolve(clientes);
         }
       });
   });

@@ -2,6 +2,8 @@ var express = require('express');
 var mongoose = require('mongoose');
 var appRoutes = require('./routes/appRoutes');
 var UsuarioRoutes = require('./routes/usuarioRoutes.js');
+var cargoRoutes = require('./routes/cargoRoutes');
+var clientesRoutes = require('./routes/clienteRoute');
 var LoginRoutes = require('./routes/loginRoutes');
 var hospitalesRoutes = require('./routes/hospitalesRoutes');
 var medicosRoutes = require('./routes/medicoRoutes');
@@ -51,6 +53,8 @@ app.use('/gestionitem', gestionItemRoutes);
 app.use('/solicitud', solicitudesRoutes);
 app.use('/tarea', tareaRoutes);
 app.use('/tipomtto', tipomttoRoutes);
+app.use('/clientes', clientesRoutes);
+app.use('/cargos', cargoRoutes);
 app.use('/', appRoutes);
 
 //escuchar peticiones
