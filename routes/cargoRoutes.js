@@ -108,7 +108,7 @@ app.get('/',  (req, res, next)=>{
             }
 
             cargo.nombre = body.nombre;
-            cargo.valorHora = body.valor
+            cargo.valorHora = body.valorHora;
 
             
             cargo.save((err, cargoActualizado)=>{
