@@ -11,7 +11,9 @@ var app = express();
 app.post('/', (req, res)=>{
     var body = req.body;
     Usuario.findOne({correo:body.correo}, (err, usuarioDB)=>{
-        
+        console.log("aqui viene el usuario db");
+        console.log(usuarioDB.password);
+
         if(err){
             res.status(500).json({
               ok:false,
@@ -27,8 +29,10 @@ app.post('/', (req, res)=>{
               });
         }
         //verificamos la contraseña
-
+        
         if(!bcrypt.compareSync(body.password, usuarioDB.password)){
+            console.log("aqui viene el usuario db");
+            console.log(usuarioDB.password);
             return res.status(400).json({
                 ok:false,
                 mensaje:"Contraseña inconrrecta",
