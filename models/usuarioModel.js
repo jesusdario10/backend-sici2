@@ -14,7 +14,10 @@ var UsuarioSchema = new Schema({
     password: {type:String, required: [true, "La contraseña es necesaria"]},
     img: {type:String },
     role: {type:String, default:"USER_ROLE", enum: rolesValidos},
-    google: {type:Boolean, default:false}
+    google: {type:Boolean, default:false},
+    cargo: {type: Schema.Types.ObjectId,	ref: 'Cargo'},
+    cliente: {type: Schema.Types.ObjectId,	ref: 'Cliente'}
+
 });
 
 //exportando el Schema

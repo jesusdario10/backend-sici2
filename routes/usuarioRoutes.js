@@ -11,7 +11,9 @@ var app = express();
 app.get('/usuarios', (req, res, next)=>{
   var desde = req.query.desde || 0;
   desde=Number(desde);
-  Usuario.find({},'nombre correo img role password')
+  Usuario.find({})
+   .populate('cliente', 'nombre')
+   .populate('cargo', 'nombre')
    .skip(desde)
    .limit(5)
    .exec((err, usuario)=>{
@@ -38,12 +40,16 @@ app.get('/usuarios', (req, res, next)=>{
 app.post('/usuarios',  (req, res, next)=>{
 
   var body = req.body
+  console.log(body);
   var usuario = new Usuario({
     nombre : body.nombre,
     correo: body.correo,
     password: bcrypt.hashSync(body.password, 10),
     img : body.img,
-    role : body.role
+    role : body.role,
+    cargo : body.cargo,
+    cliente : body.cliente
+    
   });
   
   usuario.save((err, usuarioGuardado)=>{

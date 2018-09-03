@@ -60,7 +60,7 @@ app.get('/',  (req, res, next)=>{
       console.log(body);
       var cargo = new Cargo({
           nombre:body.nombre,
-          valorHora: body.valor
+          valorHora: body.valorHora
       })
 
       cargo.save((err, cargoGuardado)=>{
