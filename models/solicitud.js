@@ -23,7 +23,9 @@ var SolicitudSchema = Schema({
     }],
     valorTotal:{type:Number},
     nombre:{type:String},
-    estado: {type:String, default:"CREADA"}
+    estado: {type:String, default:"CREADA"},
+    cliente: {type: Schema.Types.ObjectId,	ref: 'Cliente', required:true },
+    cargo: {type: Schema.Types.ObjectId,	ref: 'Cargo', required:true },
     
 });
 

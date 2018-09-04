@@ -14,6 +14,7 @@ app.get('/:id', (req, res, next)=>{
     
 
     Solicitud.find({_id:solicitud})
+     .populate('cliente')
      .exec((err, solicitudes)=>{
       if(err){
         res.status(500).json({
@@ -45,11 +46,12 @@ app.get('/:id', (req, res, next)=>{
       });
     });
   });
-  //get solicitudes mostrar todas
+  //get solicitudes mostrar todas para administrador
 app.get('/', (req, res, next)=>{
     var valor_total = 0;
 
     Solicitud.find({})
+     .populate('cliente', 'nombre')
      .exec((err, solicitudes)=>{
       if(err){
         res.status(500).json({
@@ -70,13 +72,45 @@ app.get('/', (req, res, next)=>{
       });
     });
   });
+  //getsolicitudes para los clientes
+  app.get('/solicitudesclientes/:cliente', (req, res, next)=>{
+    var valor_total = 0;
+    var cliente = req.params.cliente
+
+    Solicitud.find({cliente:cliente})
+     .populate('cliente', 'nombre')
+     .exec((err, solicitudes)=>{
+      if(err){
+        res.status(500).json({
+          ok:false,
+          mensaje:"no se pudieron traer los datos",
+          errors:err
+       });
+      }
+
+      Solicitud.count({}, (err, conteo)=>{
+        res.status(200).json({
+          ok:true,
+          mensaje:"peticion realizada correctamente",
+          solicitudes:solicitudes,
+          total:conteo
+          
+       });
+      });
+    });
+  });
+
+
     //post  crear solicitud
     app.post('/',  (req, res, next)=>{
         var body = req.body;
+        console.log(body);
 
         
         var solicitud = new Solicitud({
-          nombre : body.nombre
+          nombre : body.nombre,
+          cliente : body.cliente,
+          cargo : body.cargo
         });
         solicitud.save((err, solicitudGuardada)=>{
           if(err){
