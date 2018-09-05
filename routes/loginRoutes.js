@@ -10,47 +10,48 @@ var app = express();
 
 app.post('/', (req, res)=>{
     var body = req.body;
+    console.log(body);
     Usuario.findOne({correo:body.correo}, (err, usuarioDB)=>{
-        console.log("aqui viene el usuario db");
-        console.log(usuarioDB.password);
-
         if(err){
-            res.status(500).json({
+           return res.status(400).json({
               ok:false,
-              mensaje:"no se pudo buscar correo",
+              mensaje:"Contraseña o Correo Inconrrecto",
               errors:err
             });
         }
-        if(!usuarioDB){
-            res.status(500).json({
+        if(usuarioDB===null){
+            res.status(401).json({
                 ok:false,
-                mensaje:"no se encontro el correo",
+                mensaje:"Contraseña o Correo Inconrrecto",
                 errors:err
-              });
+            })
         }
-        //verificamos la contraseña
-        
-        if(!bcrypt.compareSync(body.password, usuarioDB.password)){
-            console.log("aqui viene el usuario db");
-            console.log(usuarioDB.password);
-            return res.status(400).json({
-                ok:false,
-                mensaje:"Contraseña inconrrecta",
-                errors:err
-              });
+        if(usuarioDB != null){
+            if(!bcrypt.compareSync(body.password, usuarioDB.password)){
+                console.log("aqui viene el usuario db");
+                console.log(usuarioDB.password);
+                return res.status(400).json({
+                    ok:false,
+                    mensaje:"Contraseña o Correo Inconrrecto",
+                    errors:err
+                  });
+            }
+            //crear un token
+            usuarioDB.password=":)rrrrr";
+            var token = jwt.sign({usuario:usuarioDB}, SEED, {expiresIn:14400});//4 horas
+            
+            res.status(200).json({
+                ok:true,
+                usuario:usuarioDB,
+                token:token,
+                menu: obtenerMenu(usuarioDB.role)
+            })
         }
-        //crear un token
-        usuarioDB.password=":)rrrrr";
-        var token = jwt.sign({usuario:usuarioDB}, SEED, {expiresIn:14400});//4 horas
-        
-        res.status(200).json({
-            ok:true,
-            usuario:usuarioDB,
-            token:token,
-            menu: obtenerMenu(usuarioDB.role)
-        })
+      
     });
 });
+
+
 
 /***************FUNCION DE ENVIO DE MENU****************/
 function obtenerMenu( ROLE ){

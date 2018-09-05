@@ -40,7 +40,7 @@ app.get('/usuarios', [mdAutenticacion.verificarToken, mdAutenticacion.verificaAD
 app.post('/usuarios', [mdAutenticacion.verificarToken, mdAutenticacion.verificaADMIN_ROLE],  (req, res, next)=>{
 
   var body = req.body
-  console.log(body);
+  
   var usuario = new Usuario({
     nombre : body.nombre,
     correo: body.correo,
@@ -56,9 +56,10 @@ app.post('/usuarios', [mdAutenticacion.verificarToken, mdAutenticacion.verificaA
     if(err){
       res.status(400).json({
         ok:false,
-        mensaje:"no se pudieron traer los datos",
+        mensaje:"Error al crear el correo",
         errors:err
      });
+     return false;
     }
     res.status(200).send({
       usuarioGuardado :usuarioGuardado,
