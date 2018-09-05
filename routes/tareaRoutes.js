@@ -1,9 +1,10 @@
 var express = require('express');
 var Tarea = require('../models/tareasModel');
+var mdAutenticacion = require('../middlewares/autenticacion');
 //inicialziar variables
 var app = express();
 //prueba
-app.get('/',  (req, res, next)=>{
+app.get('/', [mdAutenticacion.verificarToken, mdAutenticacion.verificaADMIN_ROLE],  (req, res, next)=>{
 
     Tarea.find({})
         .populate('tipomtto1', 'nombre')
@@ -30,7 +31,7 @@ app.get('/',  (req, res, next)=>{
         });
 });
 //crear tarea
-app.post('/', (req, res, next)=>{
+app.post('/',  [mdAutenticacion.verificarToken, mdAutenticacion.verificaADMIN_ROLE], (req, res, next)=>{
     var body = req.body;
     var tarea = new Tarea({
         nombre:body.nombre,

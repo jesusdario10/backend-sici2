@@ -47,7 +47,7 @@ app.get('/:id', mdAutenticacion.verificarToken, (req, res, next)=>{
     });
   });
   //get solicitudes mostrar todas para administrador
-app.get('/', (req, res, next)=>{
+app.get('/', mdAutenticacion.verificarToken, (req, res, next)=>{
     var valor_total = 0;
 
     Solicitud.find({})
@@ -73,7 +73,7 @@ app.get('/', (req, res, next)=>{
     });
   });
   //getsolicitudes para los clientes
-  app.get('/solicitudesclientes/:cliente', (req, res, next)=>{
+  app.get('/solicitudesclientes/:cliente', mdAutenticacion.verificarToken, (req, res, next)=>{
     var valor_total = 0;
     var cliente = req.params.cliente
 

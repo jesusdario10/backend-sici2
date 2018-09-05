@@ -4,7 +4,7 @@ var mdAutenticacion = require('../middlewares/autenticacion');
 //inicialziar variables
 var app = express();
 //listar los tipos de mantenimientos
-app.get('/',  (req, res, next)=>{
+app.get('/',  [mdAutenticacion.verificarToken, mdAutenticacion.verificaADMIN_ROLE], (req, res, next)=>{
 
     TipoMtto.find({})
         .exec((err, tiposMtto)=>{

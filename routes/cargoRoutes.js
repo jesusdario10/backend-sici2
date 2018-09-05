@@ -5,7 +5,7 @@ var mdAutenticacion = require('../middlewares/autenticacion');
 var app = express();
 
 //get obtener todos los cargos
-app.get('/',  (req, res, next)=>{
+app.get('/', [mdAutenticacion.verificarToken, mdAutenticacion.verificaADMIN_ROLE],  (req, res, next)=>{
     Cargo.find({})
      .exec((err, cargos)=>{
       if(err){
@@ -27,7 +27,7 @@ app.get('/',  (req, res, next)=>{
   });
 
   //obtener un solo cargo
-  app.get('/:id', (req, res, next)=>{
+  app.get('/:id', [mdAutenticacion.verificarToken, mdAutenticacion.verificaADMIN_ROLE], (req, res, next)=>{
       var id = req.params.id;
       Cargo.findById(id)
       .exec((err, cargo)=>{

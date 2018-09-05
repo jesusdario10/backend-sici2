@@ -8,14 +8,14 @@ var app = express();
 //rutas
 
 //get usuarios
-app.get('/usuarios', (req, res, next)=>{
+app.get('/usuarios', [mdAutenticacion.verificarToken, mdAutenticacion.verificaADMIN_ROLE], (req, res, next)=>{
   var desde = req.query.desde || 0;
   desde=Number(desde);
   Usuario.find({})
    .populate('cliente', 'nombre')
    .populate('cargo', 'nombre')
    .skip(desde)
-   .limit(5)
+   
    .exec((err, usuario)=>{
     if(err){
       res.status(500).json({

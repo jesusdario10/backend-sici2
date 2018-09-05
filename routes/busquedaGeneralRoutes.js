@@ -3,13 +3,14 @@ var Hospital = require('../models/hospitalesModels');
 var Medicos = require('../models/medicosModels');
 var Usuarios = require('../models/usuarioModel');
 var Clientes = require('../models/clienteModel');
+var mdAutenticacion = require('../middlewares/autenticacion');
 
 var app = express();
 
 // ================================================
 // Busqueda general
 // ================================================
-app.get('/todo/:busqueda', (req, res, next)=>{
+app.get('/todo/:busqueda', [mdAutenticacion.verificarToken, mdAutenticacion.verificaADMIN_ROLE], (req, res, next)=>{
     var busqueda = req.params.busqueda;
     var regex = new RegExp(busqueda, 'i');
 
@@ -32,7 +33,7 @@ app.get('/todo/:busqueda', (req, res, next)=>{
 // Busqueda Especifica
 // ==================================================
 
-app.get('/:tabla/:busqueda', (req, res)=>{
+app.get('/:tabla/:busqueda', [mdAutenticacion.verificarToken, mdAutenticacion.verificaADMIN_ROLE], (req, res)=>{
   var tabla = req.params.tabla;
   console.log(tabla);
   var busqueda = req.params.busqueda;
