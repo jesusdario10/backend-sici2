@@ -1,10 +1,10 @@
 var express = require('express');
 var Solicitud = require('../models/solicitud');
-//var mdAutenticacion = require('../middlewares/autenticacion');
+var mdAutenticacion = require('../middlewares/autenticacion');
 //inicialziar variables
 var app = express();
 
-app.get('/:id',  (req, res, next)=>{
+app.get('/:id',   (req, res, next)=>{
     var idSolicitud = req.params.id
     var posItem = parseInt( req.query.item);
     console.log(idSolicitud);
@@ -42,7 +42,7 @@ app.get('/:id',  (req, res, next)=>{
    
 });
 //eliminando items
-app.delete('/:id',  (req, res, next)=>{
+app.delete('/:id',   (req, res, next)=>{
     var idSolicitud = req.params.id
     var posItem = parseInt( req.query.item);
     

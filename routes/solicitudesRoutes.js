@@ -1,6 +1,6 @@
 var express = require('express');
 var Solicitud = require('../models/solicitud');
-//var mdAutenticacion = require('../middlewares/autenticacion');
+var mdAutenticacion = require('../middlewares/autenticacion');
 //inicialziar variables
 var app = express();
 
@@ -14,7 +14,7 @@ app.get('/:id', (req, res, next)=>{
     
 
     Solicitud.find({_id:solicitud})
-     .populate('cliente')
+     .populate('cliente', 'nombre nit direccion telefono')
      .exec((err, solicitudes)=>{
       if(err){
         res.status(500).json({
@@ -78,7 +78,7 @@ app.get('/', (req, res, next)=>{
     var cliente = req.params.cliente
 
     Solicitud.find({cliente:cliente})
-     .populate('cliente', 'nombre')
+     .populate('cliente', 'nombre nit direccion telefono')
      .exec((err, solicitudes)=>{
       if(err){
         res.status(500).json({
@@ -102,7 +102,7 @@ app.get('/', (req, res, next)=>{
 
 
     //post  crear solicitud
-    app.post('/',  (req, res, next)=>{
+    app.post('/', mdAutenticacion.verificarToken,  (req, res, next)=>{
         var body = req.body;
         console.log(body);
 
@@ -128,7 +128,7 @@ app.get('/', (req, res, next)=>{
         });
     });
     //post para insertar itens en las solicitudes
-    app.post('/:id',  (req, res)=>{
+    app.post('/:id', mdAutenticacion.verificarToken, (req, res)=>{
         var id = req.params.id;
         var body = req.body;
         console.log(body);
@@ -176,7 +176,7 @@ app.get('/', (req, res, next)=>{
       });
     });
     //actualizar estado de una solicitud
-    app.put('/:id', (req, res)=>{
+    app.put('/:id', mdAutenticacion.verificarToken, (req, res)=>{
         var id = req.params.id;
         var body = req.body;
         console.log(body);
@@ -218,7 +218,7 @@ app.get('/', (req, res, next)=>{
         })
     })
     //delete solicitud
-    app.delete('/:id',  (req, res)=>{
+    app.delete('/:id', mdAutenticacion.verificarToken, (req, res)=>{
         var id = req.params.id;
     
         Solicitud.findByIdAndRemove(id, (err, solicitudBorrada)=>{
@@ -237,7 +237,7 @@ app.get('/', (req, res, next)=>{
       });
     });
     //delete item de la solicitud
-    app.post('/solicitud/:id/',  (req, res)=>{
+    app.post('/solicitud/:id/', mdAutenticacion.verificarToken, (req, res)=>{
         var id = req.params.id;
         var doc =  parent.children.id(_id);
     

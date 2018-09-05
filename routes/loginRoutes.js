@@ -40,21 +40,70 @@ app.post('/', (req, res)=>{
               });
         }
         //crear un token
-
         usuarioDB.password=":)rrrrr";
         var token = jwt.sign({usuario:usuarioDB}, SEED, {expiresIn:14400});//4 horas
         
         res.status(200).json({
             ok:true,
             usuario:usuarioDB,
-            token:token
+            token:token,
+            menu: obtenerMenu(usuarioDB.role)
         })
+    });
+});
 
+/***************FUNCION DE ENVIO DE MENU****************/
+function obtenerMenu( ROLE ){
 
-    })
+    var menu = [
+        {
+          titulo: "Mantenimientos",
+          icono: "mdi mdi-folder-lock-open",
+          submenu:[
+            { titulo:"Dashboard", url:"/dashboard" },
+            {titulo:"Solicitudes", url:'/solicitudes'}
+            
+          ]
+    
+        }
+        /*{
+          titulo:"Configuraciones",
+          icono:"mdi mdi-wrench",
+          submenu:[
+            {titulo:"Tipos Mtto", url:"/tipomtto"},
+            {titulo:"Tareas", url:"/tarea"},
+            {titulo:"Usuarios", url:'/usuarios'},
+            {titulo:"Clientes", url:"/clientes"},
+            {titulo:"Cargos", url:"/cargos"}
+          ]
+        }*/
+      ];
+      
+      //SI ES ADMINISTRADOR
+      if(ROLE === 'ADMIN_ROLE'){
+          menu.push(
+            {
+                titulo:"Administracion",
+                icono:"mdi mdi-account-star-variant",
+                submenu:[
+                  {titulo:"Ordenes", url:'/ordenes'}
+                ]
+            },  
+            {
+                titulo:"Configuraciones",
+                icono:"mdi mdi-wrench",
+                submenu:[
+                  {titulo:"Tipos Mtto", url:"/tipomtto"},
+                  {titulo:"Tareas", url:"/tarea"},
+                  {titulo:"Usuarios", url:'/usuarios'},
+                  {titulo:"Clientes", url:"/clientes"},
+                  {titulo:"Cargos", url:"/cargos"}
+                ]
+              }
+          );
+      }
 
-
-
-})
+    return menu;
+}
 
 module.exports = app;
