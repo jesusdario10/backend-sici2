@@ -55,7 +55,7 @@ app.get('/',  (req, res, next)=>{
   })
   
   //Crear cliente
-  app.post('/',  mdAutenticacion.verificarToken, (req, res, next)=>{
+  app.post('/',  [mdAutenticacion.verificarToken, mdAutenticacion.verificaADMIN_ROLE], (req, res, next)=>{
       var body = req.body;
       console.log(body);
       var cliente = new Cliente({
@@ -92,7 +92,7 @@ app.get('/',  (req, res, next)=>{
       })
   });
   //actualizar clientes
-  app.put('/:id',  mdAutenticacion.verificarToken, (req, res, next)=>{
+  app.put('/:id',   [mdAutenticacion.verificarToken, mdAutenticacion.verificaADMIN_ROLE], (req, res, next)=>{
       var body = req.body;
       var id = req.params.id;
 

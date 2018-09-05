@@ -1,8 +1,9 @@
 var express = require('express');
 var TipoMtto = require('../models/tipomtto');
+var mdAutenticacion = require('../middlewares/autenticacion');
 //inicialziar variables
 var app = express();
-//prueba
+//listar los tipos de mantenimientos
 app.get('/',  (req, res, next)=>{
 
     TipoMtto.find({})
@@ -26,7 +27,8 @@ app.get('/',  (req, res, next)=>{
             });
         });
 });
-app.post('/',  (req, res, next)=>{
+//crear tipos demantenimiento
+app.post('/', [mdAutenticacion.verificarToken, mdAutenticacion.verificaADMIN_ROLE],  (req, res, next)=>{
     var body = req.body;
     var tipoMtto = new TipoMtto({
         nombre : body.nombre

@@ -8,7 +8,7 @@ var app = express();
 
 
 //get solicitud para añadir items
-app.get('/:id', (req, res, next)=>{
+app.get('/:id', mdAutenticacion.verificarToken, (req, res, next)=>{
    var solicitud = req.params.id;
     var valor_total = 0;
     
@@ -102,7 +102,7 @@ app.get('/', (req, res, next)=>{
 
 
     //post  crear solicitud
-    app.post('/', mdAutenticacion.verificarToken,  (req, res, next)=>{
+    app.post('/', [mdAutenticacion.verificarToken, mdAutenticacion.verificaADMIN_ROLE], (req, res, next)=>{
         var body = req.body;
         console.log(body);
 
@@ -128,12 +128,10 @@ app.get('/', (req, res, next)=>{
         });
     });
     //post para insertar itens en las solicitudes
-    app.post('/:id', mdAutenticacion.verificarToken, (req, res)=>{
+    app.post('/:id/:cliente', [mdAutenticacion.verificarToken, mdAutenticacion.verificarClienteOadmin], (req, res)=>{
         var id = req.params.id;
         var body = req.body;
-        console.log(body);
-        console.log("lo que biene en valor total $$$$$$$$$$$$$$$$$$$");
-        console.log(body.valorTotal);
+        
         Solicitud.findById(id, (err, solicitud)=>{
 
         if(err){

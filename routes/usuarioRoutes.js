@@ -37,7 +37,7 @@ app.get('/usuarios', (req, res, next)=>{
 
 
 //post  crear usuario
-app.post('/usuarios',  (req, res, next)=>{
+app.post('/usuarios', [mdAutenticacion.verificarToken, mdAutenticacion.verificaADMIN_ROLE],  (req, res, next)=>{
 
   var body = req.body
   console.log(body);
@@ -68,7 +68,7 @@ app.post('/usuarios',  (req, res, next)=>{
   });
 });
 //put actualizar usuarios
-app.put('/usuarios/:id',  (req, res)=>{
+app.put('/usuarios/:id', [mdAutenticacion.verificarToken,  mdAutenticacion.verificaADMIN_o_MismoUsuario], (req, res)=>{
   var id = req.params.id;
   var body = req.body;
 
@@ -111,7 +111,7 @@ app.put('/usuarios/:id',  (req, res)=>{
   });
 })
 //delete usuario
-app.delete('/usuarios/:id', (req, res)=>{
+app.delete('/usuarios/:id', [mdAutenticacion.verificarToken, mdAutenticacion.verificaADMIN_ROLE], (req, res)=>{
   var id = req.params.id;
 
   Usuario.findByIdAndRemove(id, (err, usuarioBorrado)=>{
