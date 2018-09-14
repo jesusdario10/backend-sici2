@@ -19,13 +19,18 @@ var SolicitudSchema = Schema({
         sitio:{type:String} ,
         cantidad:{type:Number},
         valor:{type:Number}
-        
+        /*actividades :[{
+            nombre: {type:String},
+            estado:{type:String}
+        }]*/  
     }],
     valorTotal:{type:Number},
     nombre:{type:String},
     estado: {type:String, default:"CREADA"},
     cliente: {type: Schema.Types.ObjectId,	ref: 'Cliente', required:true },
     cargo: {type: Schema.Types.ObjectId,	ref: 'Cargo', required:true },
+    date: { type: Date, default: Date.now }
+
     
 });
 

@@ -38,7 +38,7 @@ app.post('/', (req, res)=>{
             }
             //crear un token
             usuarioDB.password=":)rrrrr";
-            var token = jwt.sign({usuario:usuarioDB}, SEED, {expiresIn:14400});//4 horas
+            var token = jwt.sign({usuario:usuarioDB}, SEED, {expiresIn:14400});//4 horas 14400
             
             res.status(200).json({
                 ok:true,
@@ -87,18 +87,18 @@ function obtenerMenu( ROLE ){
                 titulo:"Administracion",
                 icono:"mdi mdi-account-star-variant",
                 submenu:[
-                  {titulo:"Ordenes", url:'/ordenes'}
+                  {titulo:"Aceptacion", url:'/aceptacion'},
+                  {titulo:"Gestion", url:'/ordenes'}
                 ]
             },  
             {
                 titulo:"Configuraciones",
                 icono:"mdi mdi-wrench",
                 submenu:[
-                  {titulo:"Tipos Mtto", url:"/tipomtto"},
-                  {titulo:"Tareas", url:"/tarea"},
                   {titulo:"Usuarios", url:'/usuarios'},
                   {titulo:"Clientes", url:"/clientes"},
-                  {titulo:"Cargos", url:"/cargos"}
+                  {titulo:"Cargos", url:"/cargos"},
+                  {titulo:"Valvulas", url:"/valvulas"}
                 ]
               }
           );

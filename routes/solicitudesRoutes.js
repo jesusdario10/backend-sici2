@@ -1,6 +1,7 @@
 var express = require('express');
 var Solicitud = require('../models/solicitud');
 var mdAutenticacion = require('../middlewares/autenticacion');
+var moment = require('moment');
 //inicialziar variables
 var app = express();
 
@@ -9,13 +10,11 @@ var app = express();
 
 //get solicitud para añadir items
 app.get('/:id', mdAutenticacion.verificarToken, (req, res, next)=>{
-   var solicitud = req.params.id;
+    var solicitud = req.params.id;
     var valor_total = 0;
-    
-
     Solicitud.find({_id:solicitud})
      .populate('cliente', 'nombre nit direccion telefono')
-     .exec((err, solicitudes)=>{
+     .exec((err, solicitud)=>{
       if(err){
         res.status(500).json({
           ok:false,
@@ -23,32 +22,19 @@ app.get('/:id', mdAutenticacion.verificarToken, (req, res, next)=>{
           errors:err
        });
       }
-      /*for (let index = 0; index < solicitudes.length; index ++) {
-
-        for (let index2 = 0; index2 < solicitudes[index].item.length; index2 ++) {
-            valor_total= valor_total + solicitudes[index].item[index2].valor;   
-          }
-        
-      }*/
-      console.log("que viene por aqui");
-      console.log(solicitudes[0].valorTotal);
-      valor_total = solicitudes[0].valorTotal
-
-      Solicitud.count({}, (err, conteo)=>{
-        res.status(200).json({
+      res.status(200).json({
           ok:true,
-          mensaje:"peticion realizada correctamente",
-          solicitudes:solicitudes,
-          total:conteo,
-          valorTotal:valor_total,
-          valorTotal2:valor_total
-       });
-      });
+          mensaje: "listado ok",
+          solicitud:solicitud[0]
+      })
+
+
     });
   });
   //get solicitudes mostrar todas para administrador
 app.get('/', mdAutenticacion.verificarToken, (req, res, next)=>{
     var valor_total = 0;
+   
 
     Solicitud.find({})
      .populate('cliente', 'nombre')
@@ -76,6 +62,7 @@ app.get('/', mdAutenticacion.verificarToken, (req, res, next)=>{
   app.get('/solicitudesclientes/:cliente', mdAutenticacion.verificarToken, (req, res, next)=>{
     var valor_total = 0;
     var cliente = req.params.cliente
+    
 
     Solicitud.find({cliente:cliente})
      .populate('cliente', 'nombre nit direccion telefono')
@@ -102,15 +89,23 @@ app.get('/', mdAutenticacion.verificarToken, (req, res, next)=>{
 
 
     //post  crear solicitud
-    app.post('/', [mdAutenticacion.verificarToken, mdAutenticacion.verificaADMIN_ROLE], (req, res, next)=>{
+    app.post('/', mdAutenticacion.verificarToken, (req, res, next)=>{
         var body = req.body;
-        console.log(body);
+        console.log("aqui viene la fecha formateada");
+        /*var fecha = moment().format('YYYY-MM-DD hh:mm:ss a');
+        console.log(fecha);*/
+        var date = new Date();
+        var fecha = moment(date).format('YYYY-MM-DD hh:mm:ss a');
+        console.log(fecha);
+
+        
 
         
         var solicitud = new Solicitud({
           nombre : body.nombre,
           cliente : body.cliente,
-          cargo : body.cargo
+          cargo : body.cargo,
+          valorTotal : body.valorTotal
         });
         solicitud.save((err, solicitudGuardada)=>{
           if(err){
@@ -122,15 +117,17 @@ app.get('/', mdAutenticacion.verificarToken, (req, res, next)=>{
           }
           res.status(201).send({
               solicitudGuardada :solicitudGuardada,
+              
               usuarioToken: req.usuario,
               ok:true
           });
         });
     });
     //post para insertar itens en las solicitudes
-    app.post('/:id/:cliente', [mdAutenticacion.verificarToken, mdAutenticacion.verificarClienteOadmin], (req, res)=>{
+    app.post('/:id/:cliente', mdAutenticacion.verificarToken, (req, res)=>{
         var id = req.params.id;
         var body = req.body;
+        console.log(body);
         
         Solicitud.findById(id, (err, solicitud)=>{
 

@@ -15,6 +15,7 @@ var itemSolicitudesRoutes = require('./routes/itemSolicitudesRoutes');
 var gestionItemRoutes = require('./routes/gestionItem');
 var tareaRoutes = require('./routes/tareaRoutes');
 var tipomttoRoutes = require('./routes/tipomtto');
+var tipoValvulaRoutes = require('./routes/tiposValvulasRoutes');
 
 var bodyParser = require('body-parser');
 
@@ -55,6 +56,7 @@ app.use('/tarea', tareaRoutes);
 app.use('/tipomtto', tipomttoRoutes);
 app.use('/clientes', clientesRoutes);
 app.use('/cargos', cargoRoutes);
+app.use('/tipovalvula', tipoValvulaRoutes);
 app.use('/', appRoutes);
 
 //escuchar peticiones

@@ -38,9 +38,7 @@ app.get('/usuarios', [mdAutenticacion.verificarToken, mdAutenticacion.verificaAD
 
 //post  crear usuario
 app.post('/usuarios', [mdAutenticacion.verificarToken, mdAutenticacion.verificaADMIN_ROLE],  (req, res, next)=>{
-
   var body = req.body
-  
   var usuario = new Usuario({
     nombre : body.nombre,
     correo: body.correo,
@@ -49,9 +47,7 @@ app.post('/usuarios', [mdAutenticacion.verificarToken, mdAutenticacion.verificaA
     role : body.role,
     cargo : body.cargo,
     cliente : body.cliente
-    
   });
-  
   usuario.save((err, usuarioGuardado)=>{
     if(err){
       res.status(400).json({

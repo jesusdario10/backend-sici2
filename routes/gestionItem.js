@@ -78,7 +78,7 @@ app.delete('/:id',   (req, res, next)=>{
         if(err){
           res.status(400).json({
             ok:false,
-            mensaje:"Error al actualizar usuario",
+            mensaje:"Error al Borrar el Item",
             errors:err
          });
         }

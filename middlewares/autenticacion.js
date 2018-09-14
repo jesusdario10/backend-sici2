@@ -12,7 +12,7 @@ exports.verificarToken = function(req, res, next){
       if(err){
         res.status(401).json({
           ok:false,
-          mensaje:"token incorrecto",
+          mensaje:"token incorrecto o expiro",
           errors:err
        });
       }
@@ -81,8 +81,8 @@ exports.verificarClienteOadmin= function(req, res, next){
     //sino es enviamos el error
     res.status(401).json({
       ok:false,
-      mensaje:"Token incorrecto- No es Adminsitrador ni es el cliente",
-      errors:{message :'No es Administrador no puede hacer esto'}
+      mensaje:"Accion Invalida",
+      errors:{message :'Accion Invalida'}
    });
   }
  }
