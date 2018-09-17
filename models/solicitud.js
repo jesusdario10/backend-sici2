@@ -18,11 +18,11 @@ var SolicitudSchema = Schema({
         dificultad:{type:String} ,
         sitio:{type:String} ,
         cantidad:{type:Number},
-        valor:{type:Number}
-        /*actividades :[{
+        valor:{type:Number},
+        /*tareas :[{
             nombre: {type:String},
             estado:{type:String}
-        }]*/  
+        }]*/
     }],
     valorTotal:{type:Number},
     nombre:{type:String},

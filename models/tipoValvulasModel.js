@@ -9,6 +9,7 @@ var tipoValvulaSchema = Schema({
     nombre: {type:String} ,
     actividades:[{
         nombre:{type:String},
+        tipo:{type:String},
         date: { type: Date, default: Date.now }
     }],   
     date: { type: Date, default: Date.now }
