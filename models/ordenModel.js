@@ -4,9 +4,12 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 //Schema de solicitudes
-
-var SolicitudSchema = Schema({
-    item:[{
+var OrdenSchema = Schema({
+    solicitud: {type: Schema.Types.ObjectId,	ref: 'Solicitud', required:true },
+    cliente: {type: Schema.Types.ObjectId,	ref: 'Cliente', required:true },
+    ejecutado: {tupe:Number},
+    cantidad : {type:Number},
+    valvulas : [{
         tipovalvula:{type:String} ,
         tiposello:{type:String} ,
         diametro:{type:String} ,
@@ -19,18 +22,17 @@ var SolicitudSchema = Schema({
         sitio:{type:String} ,
         cantidad:{type:Number},
         valor:{type:Number},
-        tareas :{type: Array}
-        
+        tareas:[{
+            nombre: String,
+            estado : String,
+            tipo : String
+        }]
     }],
-    valorTotal:{type:Number},
-    nombre:{type:String},
-    estado: {type:String, default:"CREADA"},
-    cliente: {type: Schema.Types.ObjectId,	ref: 'Cliente', required:true },
-    cargo: {type: Schema.Types.ObjectId,	ref: 'Cargo', required:true },
-    date: { type: Date, default: Date.now }
-
-    
+    valor :{type:Number},
+    estado :{type:String, default:"Incompleta"}
 });
 
+
+
 //exportando el Schema
-module.exports = mongoose.model('Solicitud', SolicitudSchema, "solicitudes");
+module.exports = mongoose.model('Orden', OrdenSchema, "ordenes");

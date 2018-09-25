@@ -87,7 +87,7 @@ function obtenerMenu( ROLE ){
                 titulo:"Administracion",
                 icono:"mdi mdi-account-star-variant",
                 submenu:[
-                  {titulo:"Aceptacion", url:'/aceptacion'},
+                  {titulo:"Ok/Reject", url:'/aceptacion'},
                   {titulo:"Gestion", url:'/ordenes'}
                 ]
             },  

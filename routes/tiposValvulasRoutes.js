@@ -167,34 +167,8 @@ app.post('/:id', (req, res, next)=>{
        });
     });
 });
-/*
-//LISTAR ACTIVIDADES POR DE LSO TIPOS DE VALVULA BASICO
-app.get('/:id', (req, res, next)=>{
-    var id = req.params.id
 
-    TipoValvula.findById(id)
-    TipoValvula.findById(id, (err, tipovalvula)=>{
-        if(err){
-            res.status(400).json({
-                ok:false,
-                mensaje:"Error se insertar",
-                error:err
-            });
-        }
-        if(!tipovalvula){
-            res.status(500).json({
-                ok:false,
-                mensaje:"No existen datos"
-           });
-        }
-        res.status(200).json({
-            ok:true,
-            mensaje:"!Exito",
-            tipovalvula:tipovalvula
 
-        }); 
-    });
-});*/
 
 //LISTAR ACTIVIDADES Basicas Generales y todas
 app.get('/:id', (req, res, next)=>{
@@ -216,7 +190,7 @@ app.get('/:id', (req, res, next)=>{
         }
         var actividadesBasicas = [];
         var actividadesGenerales = [];
-        /* almacenar los que son basicos*/
+        /* almacenar los que son basicos y generales*/
         for(var i = 0; i < tipovalvula.actividades.length; i++ ){  
             if(tipovalvula.actividades[i].tipo==="Basico"){
                 actividadesBasicas.push(tipovalvula.actividades[i]);
@@ -235,6 +209,78 @@ app.get('/:id', (req, res, next)=>{
 
         }); 
     })
+});
+//LISTAR ACTIVIDADES BASICAS
+app.get('/:id/basica', (req, res, next)=>{
+    var id = req.params.id;
+    TipoValvula.find({_id:id}, "actividades._id actividades.nombre actividades.estado actividades.tipo")
+        .exec((err, tipovalvula)=>{
+            if(err){
+                res.status(400).json({
+                    ok:false,
+                    mensaje:"Se Encuentra en la Primera Opcion",
+                    error:err
+                });
+                return false;
+            }
+            if(!tipovalvula){
+                res.status(500).json({
+                    ok:false,
+                    mensaje:"No existen datos"
+               });
+            }
+            console.log(tipovalvula[0].actividades.length);
+            var actividadesBasicas = [];
+            //almacenar las actividades basicas
+            for(var i = 0; i < tipovalvula[0].actividades.length; i++ ){  
+                if(tipovalvula[0].actividades[i].tipo==="Basico"){
+                    actividadesBasicas.push(tipovalvula[0].actividades[i]);
+                }     
+            }
+
+            res.status(200).json({
+                ok:true,
+                mensaje:"!Exito",
+                basicas:actividadesBasicas
+            }); 
+        })
+
+});
+
+//LISTAR ACTIVIDADES GENERALES
+app.get('/:id/generales', (req, res, next)=>{
+    var id = req.params.id;
+    TipoValvula.find({_id:id}, "actividades.nombre actividades.estado actividades.tipo")
+        .exec((err, tipovalvula)=>{
+            if(err){
+                res.status(400).json({
+                    ok:false,
+                    mensaje:"Se Encuentra en la Primera Opcion",
+                    error:err
+                });
+                return false;
+            }
+            if(!tipovalvula){
+                res.status(500).json({
+                    ok:false,
+                    mensaje:"No existen datos"
+               });
+            }
+            console.log(tipovalvula[0].actividades.length);
+            var actividadesGenerales = [];
+            //almacenar las actividades basicas
+            for(var i = 0; i < tipovalvula[0].actividades.length; i++ ){  
+                if(tipovalvula[0].actividades[i].tipo==="General"){
+                    actividadesGenerales.push(tipovalvula[0].actividades[i]);
+                }     
+            }
+
+            res.status(200).json({
+                ok:true,
+                mensaje:"!Exito",
+                generales:actividadesGenerales
+            }); 
+        })
 });
 
 

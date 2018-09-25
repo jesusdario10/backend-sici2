@@ -14,6 +14,7 @@ app.get('/:id', mdAutenticacion.verificarToken, (req, res, next)=>{
     var valor_total = 0;
     Solicitud.find({_id:solicitud})
      .populate('cliente', 'nombre nit direccion telefono')
+     .populate('tipovalvula', 'nombre')
      .exec((err, solicitud)=>{
       if(err){
         res.status(500).json({
@@ -123,7 +124,7 @@ app.get('/', mdAutenticacion.verificarToken, (req, res, next)=>{
           });
         });
     });
-    //post para insertar itens en las solicitudes
+    //post para insertar items en las solicitudes
     app.post('/:id/:cliente', mdAutenticacion.verificarToken, (req, res)=>{
         var id = req.params.id;
         var body = req.body;
