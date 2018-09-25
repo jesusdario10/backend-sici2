@@ -8,7 +8,7 @@ var app = express();
 
 
 
-//get solicitud para añadir items
+//get solicitud( una sola solicitudpara añadir items)
 app.get('/:id', mdAutenticacion.verificarToken, (req, res, next)=>{
     var solicitud = req.params.id;
     var valor_total = 0;
@@ -28,16 +28,12 @@ app.get('/:id', mdAutenticacion.verificarToken, (req, res, next)=>{
           mensaje: "listado ok",
           solicitud:solicitud[0]
       })
-
-
     });
   });
   //get solicitudes mostrar todas para administrador
 app.get('/', mdAutenticacion.verificarToken, (req, res, next)=>{
     var valor_total = 0;
-   
-
-    Solicitud.find({})
+    Solicitud.find()
      .populate('cliente', 'nombre')
      .exec((err, solicitudes)=>{
       if(err){
@@ -53,12 +49,86 @@ app.get('/', mdAutenticacion.verificarToken, (req, res, next)=>{
           ok:true,
           mensaje:"peticion realizada correctamente",
           solicitudes:solicitudes,
-          total:conteo
+          //total:conteo
+       });
+      });
+    });
+  });
+//GET MOSTRAR TODAS LAS SOLICITUDES CREADAS
+app.get('/creadasoCerradas/solicitudes', mdAutenticacion.verificarToken, (req, res, next)=>{
+    var valor_total = 0;
+    Solicitud.find()
+     .where('estado').equals('CREADA')
+     .where('estado').equals('CERRADA')
+     .populate('cliente', 'nombre')
+     .exec((err, solicitudes)=>{
+      if(err){
+        res.status(500).json({
+          ok:false,
+          mensaje:"no se pudieron traer los datos",
+          errors:err
+       });
+      }
+
+      Solicitud.count({}, (err, conteo)=>{
+        res.status(200).json({
+          ok:true,
+          mensaje:"peticion realizada correctamente",
+          solicitudes:solicitudes,
+          //total:conteo
           
        });
       });
     });
   });
+  /*app.get('/creadasoCerradas/solicitudes', mdAutenticacion.verificarToken, (req, res, next)=>{
+    var valor_total = 0;
+    Solicitud.find({$and:[{$or:[{estado:'CREADA'},{estado:'CERRADA'}]}]})
+    .populate('cliente', 'nombre')
+    .exec((err, solicitudes)=>{
+        if(err){
+            res.status(500).json({
+              ok:false,
+              mensaje:"no se pudieron traer los datos",
+              errors:err
+           });
+        }
+        res.status(200).json({
+          ok:true,
+          mensaje:"peticion realizada correctamente",
+          solicitudes:solicitudes,
+          //total:conteo
+            
+        });
+    })
+  })*/
+
+//GET MOSTRAR TODAS LAS SOLICITUDES ACEPTADAS
+app.get('/aceptadas/solicitudes', mdAutenticacion.verificarToken, (req, res, next)=>{
+    var valor_total = 0;
+    Solicitud.find()
+     .where('estado').equals('ACEPTADA')
+     .populate('cliente', 'nombre')
+     .exec((err, solicitudes)=>{
+      if(err){
+        res.status(500).json({
+          ok:false,
+          mensaje:"no se pudieron traer los datos",
+          errors:err
+       });
+      }
+
+      Solicitud.count({}, (err, conteo)=>{
+        res.status(200).json({
+          ok:true,
+          mensaje:"peticion realizada correctamente",
+          solicitudes:solicitudes,
+          //total:conteo
+          
+       });
+      });
+    });
+  });  
   //getsolicitudes para los clientes
   app.get('/solicitudesclientes/:cliente', mdAutenticacion.verificarToken, (req, res, next)=>{
     var valor_total = 0;
