@@ -54,34 +54,9 @@ app.get('/', mdAutenticacion.verificarToken, (req, res, next)=>{
       });
     });
   });
-//GET MOSTRAR TODAS LAS SOLICITUDES CREADAS
-app.get('/creadasoCerradas/solicitudes', mdAutenticacion.verificarToken, (req, res, next)=>{
-    var valor_total = 0;
-    Solicitud.find()
-     .where('estado').equals('CREADA')
-     .where('estado').equals('CERRADA')
-     .populate('cliente', 'nombre')
-     .exec((err, solicitudes)=>{
-      if(err){
-        res.status(500).json({
-          ok:false,
-          mensaje:"no se pudieron traer los datos",
-          errors:err
-       });
-      }
 
-      Solicitud.count({}, (err, conteo)=>{
-        res.status(200).json({
-          ok:true,
-          mensaje:"peticion realizada correctamente",
-          solicitudes:solicitudes,
-          //total:conteo
-          
-       });
-      });
-    });
-  });
-  /*app.get('/creadasoCerradas/solicitudes', mdAutenticacion.verificarToken, (req, res, next)=>{
+  //GET MOSTRAR TODAS LAS SOLICITUDES CREADAS O CERRADAS PARA ACEPTACION O RECHAZO
+  app.get('/creadasoCerradas/solicitudes', mdAutenticacion.verificarToken, (req, res, next)=>{
     var valor_total = 0;
     Solicitud.find({$and:[{$or:[{estado:'CREADA'},{estado:'CERRADA'}]}]})
     .populate('cliente', 'nombre')
@@ -93,6 +68,16 @@ app.get('/creadasoCerradas/solicitudes', mdAutenticacion.verificarToken, (req, r
               errors:err
            });
         }
+
+        console.log(solicitudes[0].date);
+        var ele = moment(solicitudes[0].date).format("DD-MM-YYYY")
+        console.log(ele);
+
+        for(var i=0; i<solicitudes.length;i++){
+            solicitudes[i].date = moment(solicitudes[0].date).format("DD-MM-YYYY")
+            
+        }
+
         res.status(200).json({
           ok:true,
           mensaje:"peticion realizada correctamente",
@@ -101,7 +86,7 @@ app.get('/creadasoCerradas/solicitudes', mdAutenticacion.verificarToken, (req, r
             
         });
     })
-  })*/
+  })
 
 //GET MOSTRAR TODAS LAS SOLICITUDES ACEPTADAS
 app.get('/aceptadas/solicitudes', mdAutenticacion.verificarToken, (req, res, next)=>{
