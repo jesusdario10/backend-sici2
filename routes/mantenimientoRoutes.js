@@ -96,7 +96,7 @@ app.post('/:id',    (req, res, next)=>{
               tipovalvula :solicitud[0].item[i].tipovalvula,
               tiposello : solicitud[0].item[i].tiposello,
               diametro : solicitud[0].item[i].diametro,
-              rating : solicitud[0].item[i].diametro,
+              rating : solicitud[0].item[i].rating,
               material : solicitud[0].item[i].material,
               otrosdatos : solicitud[0].item[i].otrosdatos,
               tipomtto : solicitud[0].item[i].tipomtto,
@@ -180,9 +180,10 @@ app.put('/manten/estado/:id', (req, res, next)=>{
         mensaje : "no existen los datos"
       });
     }
-    console.log(respMantenimiento.tareas[index]);
+    
     respMantenimiento.tareas[index].estado = body.estado;
     respMantenimiento.tareas[index].tiempo = parseFloat(body.tiempo);
+
     respMantenimiento.save((err, datosActualizados)=>{
       if(err){
         res.status(400).json({
@@ -196,9 +197,55 @@ app.put('/manten/estado/:id', (req, res, next)=>{
       });
     });
   })
+});
 
+//==========ACTUALIZANDO EL ESTADO DE LOS MANTENIMIENTOS==============//
+app.put('/manten/observaciones/:id', (req, res, next)=>{
+  var id = req.params.id;
+  var body = req.body;
+  console.log(body);
 
-  
+  Mantenimiento.findById(id, (err, observacionesGuardadas)=>{
+    if(err){
+      res.status(200).json({
+        ok:false,
+        mensaje :"No se pudo acceder a los datos",
+        error : err
+      });
+    }
+    if(!observacionesGuardadas){
+      res.status(500).json({
+        ok:false,
+        mensaje : "no existen los datos"
+      });
+    }
+    
+    observacionesGuardadas.obsTipovalvula = body.obsTipovalvula;
+    observacionesGuardadas.obsCuerpo = body.obsCuerpo;
+    observacionesGuardadas.obsComponentes = body.obsComponentes;
+    observacionesGuardadas.obsTmttoPrioUbi = body.obsTmttoPrioUbi;
+    observacionesGuardadas.obsDificultad = body.obsDificultad;
+    
+    observacionesGuardadas.save((err, obsActualizadas)=>{
+      if(err){
+        res.status(200).json({
+          ok:false,
+          mensaje :"No se pudo acceder a los datos",
+          error : err
+        });
+      }
+      if(!obsActualizadas){
+        res.status(500).json({
+          ok:false,
+          mensaje : "no existen los datos"
+        });
+      }
+      res.status(200).json({
+        ok:true,
+        respuesta:obsActualizadas
+      });
+    });
+  });
 });
 
 

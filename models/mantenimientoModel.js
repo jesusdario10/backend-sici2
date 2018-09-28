@@ -21,7 +21,7 @@ var MantenimientoSchema = Schema({
     cantidad:{type:Number},
     valor:{type:Number},
     tareas :[{
-        estado : {type : String},
+        estado : {type : Boolean},
         _id : {type : String},
         nombre : {type : String},
         tipo : {type:String},
