@@ -67,6 +67,8 @@ app.post('/:id',    (req, res, next)=>{
     var solicitud = req.params.id;
     var valor_total = 0;
     var body = req.body;
+    var fechaini = new Date();
+    console.log(fechaini);
     
     Solicitud.find({_id:solicitud})
      //.populate('cliente', 'nombre nit direccion telefono')
@@ -84,9 +86,6 @@ app.post('/:id',    (req, res, next)=>{
           mensaje: "listado ok",
           solicitud:solicitud[0]
       })
-      console.log("aqui viene el length");
-      
-
       for(i=0;i<solicitud[0].item.length; i++){
 
         for(j=0;j<solicitud[0].item[i].cantidad; j++){
@@ -104,7 +103,9 @@ app.post('/:id',    (req, res, next)=>{
               dificultad : solicitud[0].item[i].dificultad,
               sitio : solicitud[0].item[i].sitio,
               valor : solicitud[0].item[i].valor,
-              tareas : solicitud[0].item[i].tareas
+              tareas : solicitud[0].item[i].tareas,
+              estado : 'EJECUCION',
+              fechaInicio : fechaini
           })
           //console.log(mantenimiento);
           //console.log("+");
@@ -127,9 +128,6 @@ app.put('/:id/:index',  (req, res, next)=>{
   var id = req.params.id;
   var index = parseInt(req.params.index);
   var body = req.body;
-  console.log(id);
-  console.log(index);
-  console.log(body.serie);
 
   Mantenimiento.findById(id)
   .exec((err, mantenimientos)=>{
@@ -140,8 +138,7 @@ app.put('/:id/:index',  (req, res, next)=>{
       });
     }
     mantenimientos.serie = body.serie;
-    console.log(mantenimientos.serie);
-
+    
     mantenimientos.save((err, datosActualizados)=>{
       if(err){
         res.status(400).json({
@@ -151,13 +148,13 @@ app.put('/:id/:index',  (req, res, next)=>{
       }
       res.status(200).json({
         ok:true,
-        respuesta:datosActualizados
+        mttoActualizado:datosActualizados
       });
     });
   });
 });
-//==========ACTUALIZANDO EL ESTADO DE LOS MANTENIMIENTOS==============//
-app.put('/manten/estado/:id', (req, res, next)=>{
+//==========ACTUALIZANDO EL ESTADO DE LAS ACTIVIDADES==============//
+app.put('/manten/estadoactividades/:id', (req, res, next)=>{
   var id = req.params.id;
   var body = req.body;
   var index = parseInt(req.query.index);
@@ -193,13 +190,13 @@ app.put('/manten/estado/:id', (req, res, next)=>{
       }
       res.status(200).json({
         ok:true,
-        respuesta:datosActualizados
+        mttoActualizado:datosActualizados
       });
     });
   })
 });
 
-//==========ACTUALIZANDO EL ESTADO DE LOS MANTENIMIENTOS==============//
+//==========ACTUALIZANDO LAS OBSERVACIONES DE LOS MANTENIMIENTOS==============//
 app.put('/manten/observaciones/:id', (req, res, next)=>{
   var id = req.params.id;
   var body = req.body;
@@ -242,7 +239,65 @@ app.put('/manten/observaciones/:id', (req, res, next)=>{
       }
       res.status(200).json({
         ok:true,
-        respuesta:obsActualizadas
+        mttoActualizado:obsActualizadas
+      });
+    });
+  });
+});
+//==================ACTUALIZANDO EL ESTADO DEL MANTENIMIENTO==========================//
+app.put('/manten/estado/:id', (req, res, next)=>{
+  var id = req.params.id;
+  var body = req.body;
+  console.log(body);
+  var fechaActual = new Date();
+
+  Mantenimiento.findById(id, (err, mantenimiento)=>{
+    if(err){
+      res.status(200).json({
+        ok:false,
+        mensaje :"No se pudo acceder a los datos",
+        error : err
+      });
+    }
+    if(!mantenimiento){
+      res.status(500).json({
+        ok:false,
+        mensaje : "no existen los datos"
+      });
+    }
+    if(body.estado=="DETENIDO"){
+      mantenimiento.estado = body.estado;
+      mantenimiento.obsEstado = body.obsEstado;
+      mantenimiento.fechaDetenido = fechaActual;
+    }
+    console.log(mantenimiento);
+    
+    if(body.estado=="COMPLETADO"){
+      mantenimiento.estado = body.estado;
+      mantenimiento.obsEstado = body.obsEstado;
+      mantenimiento.fechaFin = fechaActual;
+    }
+    if(body.estado=="EJECUCION"){
+      mantenimiento.estado = body.estado;
+    }
+    
+    mantenimiento.save((err, estadoActualizado)=>{
+      if(err){
+        res.status(200).json({
+          ok:false,
+          mensaje :"No se pudo acceder a los datos",
+          error : err
+        });
+      }
+      if(!estadoActualizado){
+        res.status(500).json({
+          ok:false,
+          mensaje : "no existen los datos"
+        });
+      }
+      res.status(200).json({
+        ok:true,
+        mttoActualizado:estadoActualizado
       });
     });
   });

@@ -33,7 +33,11 @@ var MantenimientoSchema = Schema({
     obsComponentes : {type: String},
     obsTmttoPrioUbi : {type: String},
     obsDificultad : {type: String},
-    
+    estado: {type:String, default:"EJECUCION"},
+    obsEstado : {type:String},
+    fechaInicio :  { type: Date},
+    fechaDetenido:  { type: Date},
+    fechaFin :  { type: Date}
 
     
 });
