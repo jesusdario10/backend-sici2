@@ -7,7 +7,7 @@ var Schema = mongoose.Schema;
 
 var SolicitudSchema = Schema({
     item:[{
-        tipovalvula:{type:String} ,
+        tipovalvula:{type: Schema.Types.ObjectId,	ref: 'Solicitud', required:true },
         tiposello:{type:String} ,
         diametro:{type:String} ,
         rating:{type:String} ,

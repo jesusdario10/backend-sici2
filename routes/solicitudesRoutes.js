@@ -8,28 +8,33 @@ var app = express();
 
 
 
-//get solicitud( una sola solicitudpara añadir items)
+//get solicitud( una sola solicitud para añadir items) usando populate a 2 niveles en un array
 app.get('/:id', mdAutenticacion.verificarToken, (req, res, next)=>{
     var solicitud = req.params.id;
     var valor_total = 0;
     Solicitud.find({_id:solicitud})
-     .populate('cliente', 'nombre nit direccion telefono')
-     .populate('tipovalvula', 'nombre')
-     .exec((err, solicitud)=>{
-      if(err){
-        res.status(500).json({
-          ok:false,
-          mensaje:"no se pudieron traer los datos",
-          errors:err
-       });
-      }
-      res.status(200).json({
-          ok:true,
-          mensaje: "listado ok",
-          solicitud:solicitud[0]
-      })
-    });
+        .populate('cliente', 'nombre nit direccion telefono')
+        .populate({
+            path  : 'item.tipovalvula',
+            model : 'TipoValvula',
+        })
+        .exec((err, solicitud)=>{
+            if(err){
+                res.status(500).json({
+                  ok:false,
+                  mensaje:"no se pudieron traer los datos",
+                  errors:err
+               });
+              }
+              res.status(200).json({
+                  ok:true,
+                  mensaje: "listado ok",
+                  solicitud:solicitud[0]
+              })
+        })
   });
+ 
+
   //get solicitudes mostrar todas para administrador
 app.get('/', mdAutenticacion.verificarToken, (req, res, next)=>{
     var valor_total = 0;
@@ -68,16 +73,6 @@ app.get('/', mdAutenticacion.verificarToken, (req, res, next)=>{
               errors:err
            });
         }
-
-        console.log(solicitudes[0].date);
-        var ele = moment(solicitudes[0].date).format("DD-MM-YYYY")
-        console.log(ele);
-
-        for(var i=0; i<solicitudes.length;i++){
-            solicitudes[i].date = moment(solicitudes[0].date).format("DD-MM-YYYY")
-            
-        }
-
         res.status(200).json({
           ok:true,
           mensaje:"peticion realizada correctamente",

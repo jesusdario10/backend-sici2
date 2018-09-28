@@ -7,7 +7,7 @@ var moment = require('moment');
 var app = express();
 
 //LISTAR LOS MANTENIMIENTOS DE UNA SOLICITUD / ORDEN
-app.get('/:id', (req, res, next)=>{
+app.get('/:id',  (req, res, next)=>{
   var id = req.params.id;
   Mantenimiento.find({solicitud:id})
   .exec((err, mantenimientos)=>{
@@ -33,34 +33,37 @@ app.get('/:id', (req, res, next)=>{
 
   });
 });
-//LISTAR MANTENIMIENTO POR ID
-app.get('/manten/:id2', (req, res, next)=>{
+//LISTAR MANTENIMIENTO POR ID ES DECIR LA VALVULA A LA QUE SE LE APLICARA EL MTTO
+app.get('/manten/:id2',   (req, res, next)=>{
   var id = req.params.id2;
   
-  Mantenimiento.findById(id, (err, mantenimiento)=>{
-    if(err){
-      res.status(400).json({
-        ok:false,
-        mensaje:"ha ocurrido un error no se trajeron los datos",
-        error : err
+  Mantenimiento.findById(id)
+    .populate('tipovalvula', 'nombre')
+    .exec((err, mantenimiento)=>{
+      if(err){
+        res.status(400).json({
+          ok:false,
+          mensaje:"ha ocurrido un error no se trajeron los datos",
+          error : err
+        });
+      }
+      if(!mantenimiento){
+        res.status(500).json({
+          ok:false,
+          mensaje: "no existeee!!",
+          error : err
+        });
+      }
+      res.status(200).json({
+        ok:true,
+        mensaje:"!Exitoo..¡",
+        mantenimiento : mantenimiento
       });
-    }
-    if(!mantenimiento){
-      res.status(500).json({
-        ok:false,
-        mensaje: "no existeee!!",
-        error : err
-      });
-    }
-    res.status(200).json({
-      ok:true,
-      mensaje:"!Exitoo..¡",
-      mantenimiento : mantenimiento
-    });
-  });
+   
+    })   
 });
 //CREAR LOS MANTENIMIENTOS
-app.post('/:id',  (req, res, next)=>{
+app.post('/:id',    (req, res, next)=>{
     var solicitud = req.params.id;
     var valor_total = 0;
     var body = req.body;
@@ -120,7 +123,7 @@ app.post('/:id',  (req, res, next)=>{
   });
 
 //ACTUALZIAR EL SERIAL DE LAS VALVULAS VERSION2
-app.put('/:id/:index', (req, res, next)=>{
+app.put('/:id/:index',  (req, res, next)=>{
   var id = req.params.id;
   var index = parseInt(req.params.index);
   var body = req.body;
@@ -151,9 +154,52 @@ app.put('/:id/:index', (req, res, next)=>{
         respuesta:datosActualizados
       });
     });
-} );
+  });
+});
+//==========ACTUALIZANDO EL ESTADO DE LOS MANTENIMIENTOS==============//
+app.put('/manten/estado/:id', (req, res, next)=>{
+  var id = req.params.id;
+  var body = req.body;
+  var index = parseInt(req.query.index);
+  console.log(typeof index);
+  console.log(body);
+  
 
-})
+  Mantenimiento.findById(id, (err, respMantenimiento)=>{
+        
+    if(err){
+      res.status(200).json({
+        ok:false,
+        mensaje :"No se pudo acceder a los datos",
+        error : err
+      });
+    }
+    if(!respMantenimiento){
+      res.status(500).json({
+        ok:false,
+        mensaje : "no existen los datos"
+      });
+    }
+    console.log(respMantenimiento.tareas[index]);
+    respMantenimiento.tareas[index].estado = body.estado;
+    respMantenimiento.tareas[index].tiempo = parseFloat(body.tiempo);
+    respMantenimiento.save((err, datosActualizados)=>{
+      if(err){
+        res.status(400).json({
+          ok:false,
+          error:err
+        });
+      }
+      res.status(200).json({
+        ok:true,
+        respuesta:datosActualizados
+      });
+    });
+  })
+
+
+  
+});
 
 
 

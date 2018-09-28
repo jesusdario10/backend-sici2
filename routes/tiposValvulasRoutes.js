@@ -121,7 +121,9 @@ app.post('/:id', (req, res, next)=>{
 
     var objetoInsertarPrueba = {
         nombre: body.actividades.nombre,
-        tipo : body.actividades.tipo
+        tipo : body.actividades.tipo,
+        tiempo : 0,
+        img :''
     }
     //console.log(objetoInsertarPrueba);
 
@@ -213,7 +215,7 @@ app.get('/:id', (req, res, next)=>{
 //LISTAR ACTIVIDADES BASICAS
 app.get('/:id/basica', (req, res, next)=>{
     var id = req.params.id;
-    TipoValvula.find({_id:id}, "actividades._id actividades.nombre actividades.estado actividades.tipo")
+    TipoValvula.find({_id:id}, "actividades._id actividades.nombre actividades.estado actividades.tipo actividades.tiempo")
         .exec((err, tipovalvula)=>{
             if(err){
                 res.status(400).json({

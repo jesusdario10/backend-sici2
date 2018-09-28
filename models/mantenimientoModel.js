@@ -8,7 +8,7 @@ var Schema = mongoose.Schema;
 var MantenimientoSchema = Schema({
     solicitud: {type: Schema.Types.ObjectId,	ref: 'Solicitud'},
     serie:{type:String} ,
-    tipovalvula:{type:String} ,
+    tipovalvula:{type: Schema.Types.ObjectId,	ref: 'TipoValvula'},
     tiposello:{type:String} ,
     diametro:{type:String} ,
     rating:{type:String} ,
@@ -20,7 +20,21 @@ var MantenimientoSchema = Schema({
     sitio:{type:String} ,
     cantidad:{type:Number},
     valor:{type:Number},
-    tareas :{type: Array}
+    tareas :[{
+        estado : {type : String},
+        _id : {type : String},
+        nombre : {type : String},
+        tipo : {type:String},
+        tiempo : {type :Number}
+    }],
+    //observaciones
+    obsTipovalvula : {type: String},
+    obsCuerpo : {type: String},
+    obsComponentes : {type: String},
+    obsTmttoPrioUbi : {type: String},
+    obsDificultad : {type: String},
+    
+
     
 });
 
