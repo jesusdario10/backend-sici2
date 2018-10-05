@@ -137,6 +137,27 @@ app.get('/aceptadas/solicitudes', mdAutenticacion.verificarToken, (req, res, nex
       });
     });
   });
+  //consultar solicitudes por fecha para el administrador
+  app.post('/solicitudesfecha', (req, res, next)=>{
+     var body = req.body
+     console.log(body); 
+
+    var fechainicial = new Date(body.fechainicial);
+    var fechafinal = new Date(body.fechafinal);
+
+    Solicitud.find({"$and": [{"fechaInicio":{"$gte":fechainicial}}]})
+        .exec((err, solicitudes)=>{
+            res.status(200).json({
+               ok:true,
+               respuesta : solicitudes 
+            });
+        })
+    
+    console.log(fechainicial, fechafinal);
+
+
+     
+  })
 
 
     //post  crear solicitud

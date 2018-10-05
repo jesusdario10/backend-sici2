@@ -66,7 +66,15 @@ function obtenerMenu( ROLE ){
             
           ]
     
-        }
+        },
+        {
+            titulo: "Informes",
+            icono: "mdi mdi-lightbulb-on-outline",
+            submenu:[
+              {titulo:"Informes", url:'/informes'}
+            ]
+      
+         }
         /*{
           titulo:"Configuraciones",
           icono:"mdi mdi-wrench",

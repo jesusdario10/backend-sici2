@@ -62,6 +62,57 @@ app.get('/manten/:id2',   (req, res, next)=>{
    
     })   
 });
+//SABER SI TODOS LOS MANTENIMIENTOS DE UNA SOLICITUD ESTAN EN ESTADO COMPLETADO
+app.get('/completos/:id', (req, res, next)=>{
+  var idsolicitud = req.params.id;
+  console.log(idsolicitud);
+  var elcompleto;
+
+  Mantenimiento.find({solicitud:idsolicitud})
+    .exec((err, mantenimientos)=>{
+      if(err){
+        res.status(400).json({
+          ok:false,
+          mensaje:"ha ocurrido un error no se trajeron los datos",
+          error : err
+        });
+      }
+      if(!mantenimientos){
+        res.status(500).json({
+          ok:false,
+          mensaje: "no existeee!!",
+          error : err
+        });
+      }
+      //recorriendo todos los mantenimientos de una solicitud
+      var contadordeCompletos = 0;
+      
+      for(var o = 0 ; o < mantenimientos.length ; o++){
+        if(mantenimientos[o].estado == "COMPLETADO"){
+          // sumando 1 a una var si esta completo
+          contadordeCompletos ++
+          console.log(contadordeCompletos);
+        }
+      }
+      
+      
+      if(contadordeCompletos == mantenimientos.length){
+        console.log("estan completos");
+        elcompleto = true;
+      }else{
+        elcompleto = false;
+      }
+      
+      res.status(200).json({
+        ok:true,
+        completo : elcompleto
+      });
+    });
+});
+
+
+
+
 //CREAR LOS MANTENIMIENTOS
 app.post('/:id',    (req, res, next)=>{
     var solicitud = req.params.id;
@@ -104,7 +155,7 @@ app.post('/:id',    (req, res, next)=>{
               sitio : solicitud[0].item[i].sitio,
               valor : solicitud[0].item[i].valor,
               tareas : solicitud[0].item[i].tareas,
-              estado : 'EJECUCION',
+              estado : 'INICIAL',
               fechaInicio : fechaini
           })
           //console.log(mantenimiento);
@@ -248,7 +299,7 @@ app.put('/manten/observaciones/:id', (req, res, next)=>{
 app.put('/manten/estado/:id', (req, res, next)=>{
   var id = req.params.id;
   var body = req.body;
-  console.log(body);
+ 
   var fechaActual = new Date();
 
   Mantenimiento.findById(id, (err, mantenimiento)=>{
@@ -270,7 +321,7 @@ app.put('/manten/estado/:id', (req, res, next)=>{
       mantenimiento.obsEstado = body.obsEstado;
       mantenimiento.fechaDetenido = fechaActual;
     }
-    console.log(mantenimiento);
+    
     
     if(body.estado=="COMPLETADO"){
       mantenimiento.estado = body.estado;
