@@ -143,9 +143,15 @@ app.get('/aceptadas/solicitudes', mdAutenticacion.verificarToken, (req, res, nex
      console.log(body); 
 
     var fechainicial = new Date(body.fechainicial);
-    var fechafinal = new Date(body.fechafinal);
+    //var fechafinal = new Date(body.fechafinal);
+    
+    let suma5dias = fechainicial.getDate();
+    fechainicial.setDate(suma5dias + 5);
+    console.log(fechainicial)
 
-    Solicitud.find({"$and": [{"fechaInicio":{"$gte":fechainicial}}]})
+
+
+    Solicitud.find({"$and": [{"date":{"$gte":fechainicial}}]})
         .exec((err, solicitudes)=>{
             res.status(200).json({
                ok:true,
@@ -153,7 +159,7 @@ app.get('/aceptadas/solicitudes', mdAutenticacion.verificarToken, (req, res, nex
             });
         })
     
-    console.log(fechainicial, fechafinal);
+    
 
 
      
@@ -216,9 +222,13 @@ app.get('/aceptadas/solicitudes', mdAutenticacion.verificarToken, (req, res, nex
             mensaje:"no existe el usuario",
           });
         }
+        
+        
+        body.item.fechaRequerida = new Date(body.item.fechaRequerida);
+        
         //si si existe 
         solicitud.item.push(body.item);
-        if(solicitud.valorTotal==0 || solicitud.valorTotal=='' || solicitud.valorTotal ==undefined){
+        if(solicitud.valorTotal == 0 || solicitud.valorTotal =='' || solicitud.valorTotal == undefined){
             solicitud.valorTotal=body.valorTotal;
         }else{
             solicitud.valorTotal =solicitud.valorTotal+ body.valorTotal;
@@ -247,25 +257,31 @@ app.get('/aceptadas/solicitudes', mdAutenticacion.verificarToken, (req, res, nex
         var id = req.params.id;
         var body = req.body;
         console.log(body);
-        Solicitud.findById(id, (err, solicitudActualizada)=>{
+        Solicitud.findById(id, (err, solicitud)=>{
             if(err){
                 res.status(400).json({
                     ok:false,
                     mensaje:"no se pudo acceder a la base de datos",
-                    solicitud:solicitudActualizada
+                    solicitud:solicitud
                 })
             }
-            if(!solicitudActualizada){
+            if(!solicitud){
                 res.status(500).json({
                     ok:false,
                     mensaje:"no se encontro la solicitud en la db",
                     err:err
                 })
             }
-            console.log("el estado es");
-            
-            solicitudActualizada.estado = body.estado
-            solicitudActualizada.save( (err, solicitudActualizada)=>{
+            /*EL TIEMPO EN QUE SE ENTREGUE LA SOLICITUD LO DETERMINARAN LAS HORAS HOMBRE DE CADA TAREA O ACTIVIDAD*/
+            if(body.estado == 'ACEPTADA'){
+                let fechainicial = new Date(body.date);
+                //let fechafinal = new Date(body.fechafinal);
+                solicitud.fechaInicial = fechainicial;
+
+            }
+            solicitud.estado = body.estado;
+
+            solicitud.save( (err, solicitudActualizada)=>{
                 if(err){
                     res.status(400).json({
                         ok:false,
