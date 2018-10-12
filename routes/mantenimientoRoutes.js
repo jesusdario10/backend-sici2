@@ -109,17 +109,13 @@ app.get('/completos/:id', (req, res, next)=>{
       });
     });
 });
-
-
-
-
 //CREAR LOS MANTENIMIENTOS
 app.post('/:id',    (req, res, next)=>{
     var solicitud = req.params.id;
     var valor_total = 0;
     var body = req.body;
     var fechaini = new Date();
-    console.log(fechaini);
+    //console.log(fechaini);
     
     Solicitud.find({_id:solicitud})
      //.populate('cliente', 'nombre nit direccion telefono')
@@ -132,11 +128,20 @@ app.post('/:id',    (req, res, next)=>{
           errors:err
        });
       }
-      res.status(200).json({
-          ok:true,
-          mensaje: "listado ok",
-          solicitud:solicitud[0]
-      })
+      solicitud[0].fechaInicial = fechaini;
+      
+     
+      
+       solicitud[0].save((err, guardada)=>{
+        if(err){
+          res.status(500).json({
+            ok:false,
+            mensaje:"no se pudieron traer los datos",
+            errors:err
+         });         
+        }
+      });
+
       for(i=0;i<solicitud[0].item.length; i++){
 
         for(j=0;j<solicitud[0].item[i].cantidad; j++){
@@ -155,7 +160,7 @@ app.post('/:id',    (req, res, next)=>{
               sitio : solicitud[0].item[i].sitio,
               valor : solicitud[0].item[i].valor,
               tareas : solicitud[0].item[i].tareas,
-              estado : 'INICIAL',
+              estado : 'EJECUCION',
               fechaInicio : fechaini
           })
           //console.log(mantenimiento);
@@ -317,6 +322,7 @@ app.put('/manten/estado/:id', (req, res, next)=>{
       });
     }
     if(body.estado=="DETENIDO"){
+      mantenimiento.estadoAnterior = mantenimiento.estado;
       mantenimiento.estado = body.estado;
       mantenimiento.obsEstado = body.obsEstado;
       mantenimiento.fechaDetenido = fechaActual;
@@ -324,11 +330,13 @@ app.put('/manten/estado/:id', (req, res, next)=>{
     
     
     if(body.estado=="COMPLETADO"){
+      mantenimiento.estadoAnterior = mantenimiento.estado;
       mantenimiento.estado = body.estado;
       mantenimiento.obsEstado = body.obsEstado;
       mantenimiento.fechaFin = fechaActual;
     }
     if(body.estado=="EJECUCION"){
+      mantenimiento.estadoAnterior = mantenimiento.estado;
       mantenimiento.estado = body.estado;
     }
     
@@ -353,6 +361,102 @@ app.put('/manten/estado/:id', (req, res, next)=>{
     });
   });
 });
+//MOSTRAR MANTENIMIENTOS ENTRE FECHAS
+app.post('/manten/entre/fechas', (req, res, next)=>{
+  var body = req.body;
+  var capturaFechaInicial = new Date(body.fechaInicial);
+  var capturaFechaFinal =  new Date(body.fechaFinal);
+  console.log(capturaFechaFinal);
+
+
+  /*
+    1-milIni        = convirtiendo a minisegundos la fecha inicial
+    2-milFin        = convirtiendo a milisegundos la fecha final
+    3-diferencia    = restando las fechas para saber la diferencia en dias
+    4-dia           = este valor equivale a un dia en milisegundos(1000*60*60*24) 
+    5-dia2          = variable incrementadora de dias en milisegundos que usaremos en el for
+    6-fecha         = contendra la fecha que se ira generando en el for
+    7-numerodias    = division entre la diferencia y los dias todo esto se hace en milisegundos
+                      para QUE nos de un numero entero que usaremos en el for como limite de iteraciones
+    8-arrayfechas   = contendra las fechas que se generaron en el for                  
+  */
+  var milIni = capturaFechaInicial.getTime();
+  var milFin = capturaFechaFinal.getTime();
+  var diferencia = milFin - milIni;
+  const dia = 86400000;
+  var dia2 = dia
+  var fecha;
+  var numeroDias = diferencia/dia;
+  var ejecucion = 0;
+  var detenidos = 0;
+  var completos = 0;
+  var arrayfechas = [];
+  var arrayEjecucion = [];
+  var arrayDetenidos = [];
+  var arrayCompletos = [];
+  
+
+
+  Mantenimiento.find({"$and": [{"fechaInicio":{"$gte":capturaFechaInicial}},{"fechaInicio":{"$lte":capturaFechaFinal}}]})
+    .exec((err, mantenimientos)=>{
+    
+
+      for(var i = 0 ; i<= numeroDias; i++){
+        fecha = moment(new Date(milIni+dia2)).format('YYYY-MM-DD');
+        dia2 = dia + dia2;
+        arrayfechas.push(fecha); 
+        
+        for(var y =0; y< mantenimientos.length; y++){
+          let = fechaInicioMantenimiento = moment(new Date(mantenimientos[y].fechaInicio)).format('YYYY-MM-DD');
+          let = fechaCompletadoelMantenimiento = moment(new Date(mantenimientos[y].fechaFin)).format('YYYY-MM-DD');
+          let = fechaDetenidoelMantenimiento = moment(new Date(mantenimientos[y].fechaDetenido)).format('YYYY-MM-DD');
+
+          if( fecha == fechaInicioMantenimiento){
+            ejecucion = ejecucion + 1; 
+          }
+          if( fecha == fechaDetenidoelMantenimiento){
+            detenidos = detenidos + 1; 
+            ejecucion = ejecucion - 1; 
+
+          }
+          
+          //-----------------------------------------------------------------
+          if( fecha == fechaCompletadoelMantenimiento && mantenimientos[y].estado == 'COMPLETADO'){
+            completos = completos + 1; 
+            if(mantenimientos[y].estadoAnterior =='DETENIDO'){
+              
+              detenidos = detenidos - 1; 
+            }
+            if(mantenimientos[y].estadoAnterior =='EJECUCION'){
+              ejecucion = ejecucion - 1;
+            }
+          }
+          if(ejecucion < 0){
+            ejecucion = 0;
+          }
+        }
+        arrayEjecucion[i]= ejecucion;
+        arrayDetenidos[i]= detenidos;
+        arrayCompletos[i]= completos;
+
+
+      }
+
+      console.log(arrayEjecucion);
+      Mantenimiento.count({"$and": [{"fechaInicio":{"$gte":capturaFechaInicial}},{"fechaInicio":{"$lte":capturaFechaFinal}}]}, (err, conteo)=>{
+        res.status(200).json({
+          ok:true,
+          fechas : arrayfechas,
+          result: mantenimientos,
+          ejecucion:arrayEjecucion,
+          detenidos :arrayDetenidos,
+          completos : arrayCompletos,
+          contMantenimientos : conteo
+
+       });
+      });
+    })
+})
 
 
 

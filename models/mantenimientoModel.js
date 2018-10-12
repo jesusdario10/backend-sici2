@@ -34,12 +34,11 @@ var MantenimientoSchema = Schema({
     obsTmttoPrioUbi : {type: String},
     obsDificultad : {type: String},
     estado: {type:String, default:"EJECUCION"},
+    estadoAnterior : {type:String},
     obsEstado : {type:String},
     fechaInicio :  { type: Date},
     fechaDetenido:  { type: Date},
     fechaFin :  { type: Date}
-
-    
 });
 
 //exportando el Schema

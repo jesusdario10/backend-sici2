@@ -83,11 +83,11 @@ app.get('/', mdAutenticacion.verificarToken, (req, res, next)=>{
     })
   })
 
-//GET MOSTRAR TODAS LAS SOLICITUDES ACEPTADAS
+//GET MOSTRAR TODAS LAS SOLICITUDES EN EJECUCION O DETENIDAS
 app.get('/aceptadas/solicitudes', mdAutenticacion.verificarToken, (req, res, next)=>{
     var valor_total = 0;
-    Solicitud.find()
-     .where('estado').equals('ACEPTADA')
+    Solicitud.find({$and:[{$or:[{estado:'EJECUCION'},{estado:'DETENIDA'}, {estado:'ACEPTADA'}]}]})
+     
      .populate('cliente', 'nombre')
      .exec((err, solicitudes)=>{
       if(err){
@@ -104,7 +104,6 @@ app.get('/aceptadas/solicitudes', mdAutenticacion.verificarToken, (req, res, nex
           mensaje:"peticion realizada correctamente",
           solicitudes:solicitudes,
           //total:conteo
-          
        });
       });
     });
@@ -114,7 +113,6 @@ app.get('/aceptadas/solicitudes', mdAutenticacion.verificarToken, (req, res, nex
     var valor_total = 0;
     var cliente = req.params.cliente
     
-
     Solicitud.find({cliente:cliente})
      .populate('cliente', 'nombre nit direccion telefono')
      .exec((err, solicitudes)=>{
@@ -125,45 +123,74 @@ app.get('/aceptadas/solicitudes', mdAutenticacion.verificarToken, (req, res, nex
           errors:err
        });
       }
-
       Solicitud.count({}, (err, conteo)=>{
         res.status(200).json({
           ok:true,
           mensaje:"peticion realizada correctamente",
           solicitudes:solicitudes,
-          total:conteo
-          
+          total:conteo      
        });
       });
     });
   });
-  //consultar solicitudes por fecha para el administrador
-  app.post('/solicitudesfecha', (req, res, next)=>{
-     var body = req.body
-     console.log(body); 
-
-    var fechainicial = new Date(body.fechainicial);
-    //var fechafinal = new Date(body.fechafinal);
+//consultar solicitudes por fecha para el administrador
+app.post('/solicitudesfecha', (req, res, next)=>{
+    var body = req.body
+    console.log("esto es el body: ", body); 
+    var capturaFechaInicial = body.fechaInicial;
+    var fechaInicial;
+    var capturaFechaFinal = body.fechaFinal;
+    var fechaFinal;
     
-    let suma5dias = fechainicial.getDate();
-    fechainicial.setDate(suma5dias + 5);
-    console.log(fechainicial)
+    console.log("fecha inicial: 149 ", capturaFechaInicial);
+    console.log("fecha fechafinal: 150 ", capturaFechaFinal);
+ 
+    //==============SI EL USUARIO NO SELECCIONA NINGUNA FECHA================//
+    if(capturaFechaInicial == undefined && capturaFechaFinal == undefined){
+        fechaInicial = new Date('2018-01-01');
+        fechaFinal = new Date('2080-01-01');
+        console.log("1");
 
+    }
+    //==========SI EL USUARIO ENVIA TANTO LA FECHA INICIAL COMO LA FINAL ====//
+    if(capturaFechaInicial !== undefined && capturaFechaFinal !== undefined){
+        fechaInicial = new Date(body.fechaInicial);
+        fechaFinal = new Date(body.fechaFinal);
+        console.log("2");
+    }
+    //=================SI ELVIA SOLO LA FECHA FINAL========================//
+    if(capturaFechaInicial == undefined && capturaFechaFinal !== undefined){
+        fechaInicial = new Date('2018-01-01');
+        fechaFinal = new Date(body.fechaFinal);
+        console.log("3");
+    }
+    //=================SI ELVIA SOLO LA FECHA INICIAL========================//
+    if(capturaFechaInicial !== undefined && capturaFechaFinal == undefined){
+       fechaInicial = new Date(body.fechaInicial);
+       fechaFinal = new Date('2080-01-01');
+       console.log("4");
+    }
 
-
-    Solicitud.find({"$and": [{"date":{"$gte":fechainicial}}]})
+    Solicitud.find({"$and": [{"date":{"$gte":fechaInicial}},{"date":{"$lte":fechaFinal}}]})
         .exec((err, solicitudes)=>{
-            res.status(200).json({
-               ok:true,
-               respuesta : solicitudes 
-            });
-        })
-    
-    
-
-
-     
-  })
+            if(err){
+                res.status(500).json({
+                    ok:false,
+                    mensaje:"no se pudieron traer los datos",
+                    errors:err
+                 });  
+            }
+            Solicitud.count({"$and": [{"date":{"$gte":fechaInicial}},{"date":{"$lte":fechaFinal}}]})
+                .exec((err, conteo)=>{
+                    res.status(200).json({
+                        ok:true,
+                        solicitudes : solicitudes,
+                        cantidad : conteo
+                    });
+                })
+ 
+        });
+})
 
 
     //post  crear solicitud
@@ -176,9 +203,6 @@ app.get('/aceptadas/solicitudes', mdAutenticacion.verificarToken, (req, res, nex
         var fecha = moment(date).format('YYYY-MM-DD hh:mm:ss a');
         console.log(fecha);
 
-        
-
-        
         var solicitud = new Solicitud({
           nombre : body.nombre,
           cliente : body.cliente,
@@ -273,12 +297,8 @@ app.get('/aceptadas/solicitudes', mdAutenticacion.verificarToken, (req, res, nex
                 })
             }
             /*EL TIEMPO EN QUE SE ENTREGUE LA SOLICITUD LO DETERMINARAN LAS HORAS HOMBRE DE CADA TAREA O ACTIVIDAD*/
-            if(body.estado == 'ACEPTADA'){
-                let fechainicial = new Date(body.date);
-                //let fechafinal = new Date(body.fechafinal);
-                solicitud.fechaInicial = fechainicial;
 
-            }
+            
             solicitud.estado = body.estado;
 
             solicitud.save( (err, solicitudActualizada)=>{
