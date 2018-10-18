@@ -214,8 +214,7 @@ app.put('/manten/estadoactividades/:id', (req, res, next)=>{
   var id = req.params.id;
   var body = req.body;
   var index = parseInt(req.query.index);
-  console.log(typeof index);
-  console.log(body);
+
   
 
   Mantenimiento.findById(id, (err, respMantenimiento)=>{
@@ -232,6 +231,9 @@ app.put('/manten/estadoactividades/:id', (req, res, next)=>{
         ok:false,
         mensaje : "no existen los datos"
       });
+    }
+    if(body.tiempo == '' || body.tiempo == undefined){
+      body.tiempo = 1;
     }
     
     respMantenimiento.tareas[index].estado = body.estado;
@@ -250,6 +252,61 @@ app.put('/manten/estadoactividades/:id', (req, res, next)=>{
       });
     });
   })
+});
+//==========TODAS LAS ACTIVIDADES SE REALIZARON==============//
+app.post('/manten/actividadesrealizadas/:id', (req, res, next)=>{
+  var id = req.params.id;
+  console.log(id);
+  var cont = 0;
+  //=======buscamos el mantenimiento====================//
+  Mantenimiento.findById(id, (err, respMantenimiento)=>{
+    if(err){
+      res.status(200).json({
+        ok:false,
+        mensaje :"No se pudo acceder a los datos",
+        error : err
+      });
+    }
+    if(!respMantenimiento){
+      res.status(500).json({
+        ok:false,
+        mensaje : "no existen los datos"
+      });
+    }
+    
+    //=======recorro las tareas del mantenimiento para ver si se realizaron==========//
+    for(var i = 0; i < respMantenimiento.tareas.length; i++){
+      if(respMantenimiento.tareas[i].estado == true){
+        cont = cont +1;
+        
+        
+      }
+    }
+    console.log(cont);
+    //si la suma de las tareas realizadas es igual  a las tareas cambio el estado de estadoactividades a true
+    if((respMantenimiento.tareas.length - 1) == cont ){
+      respMantenimiento.estadoactividades = true
+
+      //===============guardo  el cambio de estadoactividades===========//
+      respMantenimiento.save((err, datosActualizados)=>{
+        if(err){
+          res.status(400).json({
+            ok:false,
+            error:err
+          });
+        }
+        res.status(200).json({
+          ok:true,
+          mttoActualizado:datosActualizados
+        });
+      });
+    }else{ // Si no se han realizado todas las actividades enviamos de todas maneras el estado false por default
+      res.status(200).json({
+        ok:false,
+        respMantenimiento:respMantenimiento.estadoactividades 
+      });
+    }
+  });
 });
 
 //==========ACTUALIZANDO LAS OBSERVACIONES DE LOS MANTENIMIENTOS==============//
@@ -366,7 +423,33 @@ app.post('/manten/entre/fechas', (req, res, next)=>{
   var body = req.body;
   var capturaFechaInicial = new Date(body.fechaInicial);
   var capturaFechaFinal =  new Date(body.fechaFinal);
-  console.log(capturaFechaFinal);
+  console.log("este es el body del mantenimiento");
+  console.log(body);
+
+  if(capturaFechaInicial == undefined && capturaFechaFinal == undefined || body.fechaInicial == '' && body.fechaFinal == '' ){
+    console.log("ambos vacios");
+      capturaFechaInicial = new Date('2018-01-01');
+      capturaFechaFinal = new Date('2080-01-01');
+    console.log("1");
+}
+//==========SI EL USUARIO ENVIA TANTO LA FECHA INICIAL COMO LA FINAL ====//
+if(capturaFechaInicial !== undefined && capturaFechaFinal !== undefined){
+    capturaFechaInicial = new Date(body.fechaInicial);
+    capturaFechaFinal = new Date(body.fechaFinal);
+    console.log("2");
+}
+//=================SI ELVIA SOLO LA FECHA FINAL========================//
+if(capturaFechaInicial == undefined && capturaFechaFinal !== undefined){
+    capturaFechaInicial = new Date('2018-01-01');
+    capturaFechaFinal = new Date(body.fechaFinal);
+    console.log("3");
+}
+//=================SI ELVIA SOLO LA FECHA INICIAL========================//
+if(capturaFechaInicial !== undefined && capturaFechaFinal == undefined){
+    capturaFechaInicial = new Date(body.fechaInicial);
+    capturaFechaFinal = new Date('2080-01-01');
+   console.log("4");
+}
 
 
   /*
@@ -400,7 +483,6 @@ app.post('/manten/entre/fechas', (req, res, next)=>{
   Mantenimiento.find({"$and": [{"fechaInicio":{"$gte":capturaFechaInicial}},{"fechaInicio":{"$lte":capturaFechaFinal}}]})
     .exec((err, mantenimientos)=>{
     
-
       for(var i = 0 ; i<= numeroDias; i++){
         fecha = moment(new Date(milIni+dia2)).format('YYYY-MM-DD');
         dia2 = dia + dia2;
@@ -417,10 +499,8 @@ app.post('/manten/entre/fechas', (req, res, next)=>{
           if( fecha == fechaDetenidoelMantenimiento){
             detenidos = detenidos + 1; 
             ejecucion = ejecucion - 1; 
-
           }
-          
-          //-----------------------------------------------------------------
+          //-----------------------------------------------------------------//
           if( fecha == fechaCompletadoelMantenimiento && mantenimientos[y].estado == 'COMPLETADO'){
             completos = completos + 1; 
             if(mantenimientos[y].estadoAnterior =='DETENIDO'){
@@ -438,16 +518,13 @@ app.post('/manten/entre/fechas', (req, res, next)=>{
         arrayEjecucion[i]= ejecucion;
         arrayDetenidos[i]= detenidos;
         arrayCompletos[i]= completos;
-
-
       }
-
       console.log(arrayEjecucion);
       Mantenimiento.count({"$and": [{"fechaInicio":{"$gte":capturaFechaInicial}},{"fechaInicio":{"$lte":capturaFechaFinal}}]}, (err, conteo)=>{
         res.status(200).json({
           ok:true,
           fechas : arrayfechas,
-          result: mantenimientos,
+          mantenimientos: mantenimientos,
           ejecucion:arrayEjecucion,
           detenidos :arrayDetenidos,
           completos : arrayCompletos,

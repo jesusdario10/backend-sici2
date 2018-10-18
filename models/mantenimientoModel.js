@@ -38,7 +38,8 @@ var MantenimientoSchema = Schema({
     obsEstado : {type:String},
     fechaInicio :  { type: Date},
     fechaDetenido:  { type: Date},
-    fechaFin :  { type: Date}
+    fechaFin :  { type: Date},
+    estadoactividades : {type : Boolean, default:false}
 });
 
 //exportando el Schema

@@ -141,37 +141,40 @@ app.post('/solicitudesfecha', (req, res, next)=>{
     var fechaInicial;
     var capturaFechaFinal = body.fechaFinal;
     var fechaFinal;
+
+
     
     console.log("fecha inicial: 149 ", capturaFechaInicial);
     console.log("fecha fechafinal: 150 ", capturaFechaFinal);
  
     //==============SI EL USUARIO NO SELECCIONA NINGUNA FECHA================//
-    if(capturaFechaInicial == undefined && capturaFechaFinal == undefined){
+    if(body.fechaInicial == '' && body.fechaFinal == '' || capturaFechaInicial == undefined && capturaFechaFinal == undefined   ){
+        console.log("ambos vacios");
         fechaInicial = new Date('2018-01-01');
         fechaFinal = new Date('2080-01-01');
         console.log("1");
-
     }
     //==========SI EL USUARIO ENVIA TANTO LA FECHA INICIAL COMO LA FINAL ====//
-    if(capturaFechaInicial !== undefined && capturaFechaFinal !== undefined){
+    if(capturaFechaInicial !== undefined && capturaFechaFinal !== undefined || body.fechaInicial !== '' && body.fechaFinal !== '' ){
         fechaInicial = new Date(body.fechaInicial);
         fechaFinal = new Date(body.fechaFinal);
         console.log("2");
     }
     //=================SI ELVIA SOLO LA FECHA FINAL========================//
-    if(capturaFechaInicial == undefined && capturaFechaFinal !== undefined){
+    if(capturaFechaInicial == undefined && capturaFechaFinal !== undefined || body.fechaInicial == '' && body.fechaFinal !== '' ){
         fechaInicial = new Date('2018-01-01');
         fechaFinal = new Date(body.fechaFinal);
         console.log("3");
     }
     //=================SI ELVIA SOLO LA FECHA INICIAL========================//
-    if(capturaFechaInicial !== undefined && capturaFechaFinal == undefined){
+    if(capturaFechaInicial !== undefined && capturaFechaFinal == undefined || body.fechaInicial !== '' && body.fechaFinal == '' ){
        fechaInicial = new Date(body.fechaInicial);
        fechaFinal = new Date('2080-01-01');
        console.log("4");
     }
 
     Solicitud.find({"$and": [{"date":{"$gte":fechaInicial}},{"date":{"$lte":fechaFinal}}]})
+        .populate('cliente', 'nombre')
         .exec((err, solicitudes)=>{
             if(err){
                 res.status(500).json({
