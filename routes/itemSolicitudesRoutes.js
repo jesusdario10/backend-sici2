@@ -139,7 +139,7 @@ app.get('/:id', (req, res, next)=>{
     app.put('/:id',  (req, res)=>{
         var id = req.params.id;
         var body = req.body;
-        console.log(body);
+        
     
         Item.findById(id, (err, item)=>{
         if(err){

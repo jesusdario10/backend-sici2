@@ -71,7 +71,6 @@ exports.verificarClienteOadmin= function(req, res, next){
   var idcliente = req.params.cliente
   console.log(usuario.cliente);
   console.log(idcliente);
-
   
   //Si usuario es administraor  dejalo pasar es decir has next()
   if(usuario.role === "ADMIN_ROLE" || usuario.cliente === idcliente){

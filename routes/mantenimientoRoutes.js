@@ -65,7 +65,7 @@ app.get('/manten/:id2',   (req, res, next)=>{
 //SABER SI TODOS LOS MANTENIMIENTOS DE UNA SOLICITUD ESTAN EN ESTADO COMPLETADO
 app.get('/completos/:id', (req, res, next)=>{
   var idsolicitud = req.params.id;
-  console.log(idsolicitud);
+  
   var elcompleto;
 
   Mantenimiento.find({solicitud:idsolicitud})
@@ -141,7 +141,7 @@ app.post('/:id',    (req, res, next)=>{
          });         
         }
       });
-
+      console.log("ENTRO A GENERAR MANTENIMIENTOSSSSSSS");
       for(i=0;i<solicitud[0].item.length; i++){
 
         for(j=0;j<solicitud[0].item[i].cantidad; j++){
@@ -256,7 +256,6 @@ app.put('/manten/estadoactividades/:id', (req, res, next)=>{
 //==========TODAS LAS ACTIVIDADES SE REALIZARON==============//
 app.post('/manten/actividadesrealizadas/:id', (req, res, next)=>{
   var id = req.params.id;
-  console.log(id);
   var cont = 0;
   //=======buscamos el mantenimiento====================//
   Mantenimiento.findById(id, (err, respMantenimiento)=>{
@@ -273,18 +272,17 @@ app.post('/manten/actividadesrealizadas/:id', (req, res, next)=>{
         mensaje : "no existen los datos"
       });
     }
-    
+    console.log("estas son las actividades ---- ", respMantenimiento.tareas.length);
     //=======recorro las tareas del mantenimiento para ver si se realizaron==========//
     for(var i = 0; i < respMantenimiento.tareas.length; i++){
       if(respMantenimiento.tareas[i].estado == true){
         cont = cont +1;
-        
-        
+        console.log("esta es la sumatoria de activdiades ejecutadas ", cont);
       }
     }
-    console.log(cont);
+    
     //si la suma de las tareas realizadas es igual  a las tareas cambio el estado de estadoactividades a true
-    if((respMantenimiento.tareas.length - 1) == cont ){
+    if((respMantenimiento.tareas.length ) == cont ){
       respMantenimiento.estadoactividades = true
 
       //===============guardo  el cambio de estadoactividades===========//
@@ -301,6 +299,7 @@ app.post('/manten/actividadesrealizadas/:id', (req, res, next)=>{
         });
       });
     }else{ // Si no se han realizado todas las actividades enviamos de todas maneras el estado false por default
+      respMantenimiento.estadoactividades = false;
       res.status(200).json({
         ok:false,
         respMantenimiento:respMantenimiento.estadoactividades 
@@ -313,7 +312,7 @@ app.post('/manten/actividadesrealizadas/:id', (req, res, next)=>{
 app.put('/manten/observaciones/:id', (req, res, next)=>{
   var id = req.params.id;
   var body = req.body;
-  console.log(body);
+  
 
   Mantenimiento.findById(id, (err, observacionesGuardadas)=>{
     if(err){
@@ -379,6 +378,7 @@ app.put('/manten/estado/:id', (req, res, next)=>{
       });
     }
     if(body.estado=="DETENIDO"){
+      mantenimiento.estadoAnterior2 = mantenimiento.estadoAnterior;
       mantenimiento.estadoAnterior = mantenimiento.estado;
       mantenimiento.estado = body.estado;
       mantenimiento.obsEstado = body.obsEstado;
@@ -387,12 +387,14 @@ app.put('/manten/estado/:id', (req, res, next)=>{
     
     
     if(body.estado=="COMPLETADO"){
+      mantenimiento.estadoAnterior2 = mantenimiento.estadoAnterior;
       mantenimiento.estadoAnterior = mantenimiento.estado;
       mantenimiento.estado = body.estado;
       mantenimiento.obsEstado = body.obsEstado;
       mantenimiento.fechaFin = fechaActual;
     }
     if(body.estado=="EJECUCION"){
+      mantenimiento.estadoAnterior2 = mantenimiento.estadoAnterior;
       mantenimiento.estadoAnterior = mantenimiento.estado;
       mantenimiento.estado = body.estado;
     }
@@ -424,7 +426,7 @@ app.post('/manten/entre/fechas', (req, res, next)=>{
   var capturaFechaInicial = new Date(body.fechaInicial);
   var capturaFechaFinal =  new Date(body.fechaFinal);
   console.log("este es el body del mantenimiento");
-  console.log(body);
+  
 
   if(capturaFechaInicial == undefined && capturaFechaFinal == undefined || body.fechaInicial == '' && body.fechaFinal == '' ){
     console.log("ambos vacios");
@@ -481,6 +483,7 @@ if(capturaFechaInicial !== undefined && capturaFechaFinal == undefined){
 
 
   Mantenimiento.find({"$and": [{"fechaInicio":{"$gte":capturaFechaInicial}},{"fechaInicio":{"$lte":capturaFechaFinal}}]})
+    .populate('tipovalvula', 'nombre')
     .exec((err, mantenimientos)=>{
     
       for(var i = 0 ; i<= numeroDias; i++){
@@ -493,24 +496,37 @@ if(capturaFechaInicial !== undefined && capturaFechaFinal == undefined){
           let = fechaCompletadoelMantenimiento = moment(new Date(mantenimientos[y].fechaFin)).format('YYYY-MM-DD');
           let = fechaDetenidoelMantenimiento = moment(new Date(mantenimientos[y].fechaDetenido)).format('YYYY-MM-DD');
 
+          //------------------------ejecucion-----------------------------------------//
           if( fecha == fechaInicioMantenimiento){
             ejecucion = ejecucion + 1; 
           }
-          if( fecha == fechaDetenidoelMantenimiento){
+          if(fecha == fechaDetenidoelMantenimiento ){
+            console.log(fecha, ' - ', fechaDetenidoelMantenimiento );
+            ejecucion = ejecucion - 1;
             detenidos = detenidos + 1; 
-            ejecucion = ejecucion - 1; 
           }
-          //-----------------------------------------------------------------//
+          //------------------------detenidos------------------------------------------//
+          if( fecha == fechaDetenidoelMantenimiento  && mantenimientos[y].estado == 'DETENIDO'){
+            
+            if(mantenimientos[y].estadoAnterior2 =='EJECUCION'){
+              detenidos = detenidos - 1; 
+              ejecucion = ejecucion + 1;
+            }
+
+          }
+          
+          //-------------------------completados----------------------------------------//
           if( fecha == fechaCompletadoelMantenimiento && mantenimientos[y].estado == 'COMPLETADO'){
             completos = completos + 1; 
             if(mantenimientos[y].estadoAnterior =='DETENIDO'){
-              
               detenidos = detenidos - 1; 
             }
             if(mantenimientos[y].estadoAnterior =='EJECUCION'){
               ejecucion = ejecucion - 1;
             }
-          }
+          } //----fin
+ 
+
           if(ejecucion < 0){
             ejecucion = 0;
           }
@@ -519,7 +535,9 @@ if(capturaFechaInicial !== undefined && capturaFechaFinal == undefined){
         arrayDetenidos[i]= detenidos;
         arrayCompletos[i]= completos;
       }
-      console.log(arrayEjecucion);
+      console.log("array ejecucion ", arrayEjecucion);
+      console.log("array detenidos ", arrayDetenidos);
+      console.log("array completos ", arrayCompletos);
       Mantenimiento.count({"$and": [{"fechaInicio":{"$gte":capturaFechaInicial}},{"fechaInicio":{"$lte":capturaFechaFinal}}]}, (err, conteo)=>{
         res.status(200).json({
           ok:true,
