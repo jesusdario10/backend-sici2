@@ -58,23 +58,22 @@ function obtenerMenu( ROLE ){
 
     var menu = [
         {
+            titulo: "Informes Cliente",
+            icono: "mdi mdi-apple-keyboard-caps",
+            submenu:[
+              {titulo:"Info Clientes", url:'/informescli'}
+            ]
+      
+        },
+        {
           titulo: "Mantenimientos",
           icono: "mdi mdi-folder-lock-open",
           submenu:[
             { titulo:"Dashboard", url:"/dashboard" },
             {titulo:"Solicitudes", url:'/solicitudes'}
-            
           ]
     
         },
-        {
-            titulo: "Informes",
-            icono: "mdi mdi-lightbulb-on-outline",
-            submenu:[
-              {titulo:"Informes", url:'/informes'}
-            ]
-      
-         }
         /*{
           titulo:"Configuraciones",
           icono:"mdi mdi-wrench",
@@ -91,6 +90,14 @@ function obtenerMenu( ROLE ){
       //SI ES ADMINISTRADOR
       if(ROLE === 'ADMIN_ROLE'){
           menu.push(
+            {
+                titulo: "Informes",
+                icono: "mdi mdi-lightbulb-on-outline",
+                submenu:[
+                  {titulo:"Informes", url:'/informes'}
+                ]
+          
+            },
             {
                 titulo:"Administracion",
                 icono:"mdi mdi-account-star-variant",

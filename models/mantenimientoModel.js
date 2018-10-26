@@ -40,7 +40,8 @@ var MantenimientoSchema = Schema({
     fechaInicio :  { type: Date},
     fechaDetenido:  { type: Date},
     fechaFin :  { type: Date},
-    estadoactividades : {type : Boolean, default:false}
+    estadoactividades : {type : Boolean, default:false},
+    cliente : {type: Schema.Types.ObjectId,	ref: 'Cliente'}
 });
 
 //exportando el Schema

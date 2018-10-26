@@ -18,6 +18,7 @@ var gestionItemRoutes = require('./routes/gestionItem');
 var tipoValvulaRoutes = require('./routes/tiposValvulasRoutes');
 //var ordenRoutes = require('./routes/ordenRoutes');
 var mantenimientoRoutes = require('./routes/mantenimientoRoutes');
+var informesCliente = require('./routes/informesCliente');
 
 var bodyParser = require('body-parser');
 
@@ -61,6 +62,9 @@ app.use('/cargos', cargoRoutes);
 app.use('/tipovalvula', tipoValvulaRoutes);
 //app.use('/ordenes', ordenRoutes);
 app.use('/mantenimientos', mantenimientoRoutes);
+app.use('/infocliente', informesCliente);
+
+
 app.use('/', appRoutes);
 
 //escuchar peticiones

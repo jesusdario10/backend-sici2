@@ -115,6 +115,8 @@ app.post('/:id',    (req, res, next)=>{
     var valor_total = 0;
     var body = req.body;
     var fechaini = new Date();
+    
+    
     //console.log(fechaini);
     
     Solicitud.find({_id:solicitud})
@@ -128,7 +130,9 @@ app.post('/:id',    (req, res, next)=>{
           errors:err
        });
       }
+      var clienteS = solicitud[0].cliente;
       solicitud[0].fechaInicial = fechaini;
+      
       
      
       
@@ -161,7 +165,8 @@ app.post('/:id',    (req, res, next)=>{
               valor : solicitud[0].item[i].valor,
               tareas : solicitud[0].item[i].tareas,
               estado : 'EJECUCION',
-              fechaInicio : fechaini
+              fechaInicio : fechaini,
+              cliente : clienteS 
           })
           //console.log(mantenimiento);
           //console.log("+");
