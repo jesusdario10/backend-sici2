@@ -73,7 +73,7 @@ function subirDatosdeImagenporTipo(tipo, id, nombreArchivo, res){
       // ====en caso de que ya tubiera una imagen la borramos ===== //
       var pathViejo = "./uploads/usuarios/"+usuario.img;
       if(fs.existsSync(pathViejo)){
-        fs.unlink(pathViejo)//con unlink borramos
+        fs.unlinkSync(pathViejo)//con unlink borramos
       }
       // =========================================================== //
       // *******Almacenamos el nombre del archivo en la db********** //

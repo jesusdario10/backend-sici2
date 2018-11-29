@@ -110,7 +110,7 @@ app.get('/completos/:id', (req, res, next)=>{
     });
 });
 //CREAR LOS MANTENIMIENTOS
-app.post('/:id',    (req, res, next)=>{
+app.post('/generar/trop/activa/manten/:id',    (req, res, next)=>{
     var solicitud = req.params.id;
     var valor_total = 0;
     var body = req.body;
@@ -133,8 +133,11 @@ app.post('/:id',    (req, res, next)=>{
       var clienteS = solicitud[0].cliente;
       solicitud[0].fechaInicial = fechaini;
       
+<<<<<<< HEAD
       
      
+=======
+>>>>>>> 3591f8dcc08e4bae4a237d293dd425dfdddbb11a
       
        solicitud[0].save((err, guardada)=>{
         if(err){
@@ -181,6 +184,7 @@ app.post('/:id',    (req, res, next)=>{
           });
         }//for2       
       }//for1
+      res.status(200).send({message:"SE GENERARON LOS MANTENIMIENTOS"})
     });
   });
 
@@ -220,7 +224,6 @@ app.put('/manten/estadoactividades/:id', (req, res, next)=>{
   var body = req.body;
   var index = parseInt(req.query.index);
 
-  
 
   Mantenimiento.findById(id, (err, respMantenimiento)=>{
         
