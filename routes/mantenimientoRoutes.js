@@ -133,11 +133,8 @@ app.post('/generar/trop/activa/manten/:id',    (req, res, next)=>{
       var clienteS = solicitud[0].cliente;
       solicitud[0].fechaInicial = fechaini;
       
-<<<<<<< HEAD
       
      
-=======
->>>>>>> 3591f8dcc08e4bae4a237d293dd425dfdddbb11a
       
        solicitud[0].save((err, guardada)=>{
         if(err){
@@ -172,7 +169,7 @@ app.post('/generar/trop/activa/manten/:id',    (req, res, next)=>{
               cliente : clienteS 
           })
           //console.log(mantenimiento);
-          //console.log("+");
+          //console.log("+");s
           mantenimiento.save((err, mantenimiento)=>{
             if(err){
               res.status(500).json({
