@@ -12,11 +12,14 @@ app.post('/donamanten', (req, res, next)=>{
     var body = req.body;
     var capturaFechaInicial = new Date(body.fechaInicial);
     var capturaFechaFinal =  new Date(body.fechaFinal);
-    console.log("este es el body del mantenimiento para consultar con dona");
-    Mantenimiento.find({"$and": [{"fechaInicio":{"$gte":capturaFechaInicial}},{"fechaInicio":{"$lte":capturaFechaFinal}},{cliente:body.cliente}]})
+    var v23horasparafechafinal = 86364000;
+    var suma = capturaFechaFinal.getTime() + v23horasparafechafinal;
+    var fechaFinal23Horasmas = new Date(suma)
+    
+    Mantenimiento.find({"$and": [{"fechaInicio":{"$gte":capturaFechaInicial}},{"fechaInicio":{"$lte":fechaFinal23Horasmas}},{cliente:body.cliente}]})
       .populate('tipovalvula', 'nombre')
       .exec((err, mantenimientos)=>{
-        Mantenimiento.count({"$and": [{"fechaInicio":{"$gte":capturaFechaInicial}},{"fechaInicio":{"$lte":capturaFechaFinal}},{cliente:body.cliente}]}, (err, conteo)=>{
+        Mantenimiento.count({"$and": [{"fechaInicio":{"$gte":capturaFechaInicial}},{"fechaInicio":{"$lte":fechaFinal23Horasmas}},{cliente:body.cliente}]}, (err, conteo)=>{
           res.status(200).json({
             ok:true,
             mantenimientos: mantenimientos,
@@ -31,12 +34,14 @@ app.post('/lineamanten', (req, res, next)=>{
   var body = req.body;
   var capturaFechaInicial = new Date(body.fechaInicial);
   var capturaFechaFinal =  new Date(body.fechaFinal);
-  console.log("este es el body del mantenimiento");
+  var v23horasparafechafinal = 86364000;
+  var suma = capturaFechaFinal.getTime() + v23horasparafechafinal;
+  var fechaFinal23Horasmas = new Date(suma)
   
 //==========SI EL USUARIO ENVIA TANTO LA FECHA INICIAL COMO LA FINAL ====//
 if(capturaFechaInicial !== undefined && capturaFechaFinal !== undefined){
     capturaFechaInicial = new Date(body.fechaInicial);
-    capturaFechaFinal = new Date(body.fechaFinal);
+    var fechaFinal23Horasmas = new Date(suma)
     console.log("2");
 }
 
@@ -68,7 +73,7 @@ if(capturaFechaInicial !== undefined && capturaFechaFinal !== undefined){
   
 
 
-  Mantenimiento.find({"$and": [{"fechaInicio":{"$gte":capturaFechaInicial}},{"fechaInicio":{"$lte":capturaFechaFinal}},{"cliente":body.cliente}]})
+  Mantenimiento.find({"$and": [{"fechaInicio":{"$gte":capturaFechaInicial}},{"fechaInicio":{"$lte":fechaFinal23Horasmas}},{"cliente":body.cliente}]})
     .populate('tipovalvula', 'nombre')
     .exec((err, mantenimientos)=>{
     
@@ -124,7 +129,7 @@ if(capturaFechaInicial !== undefined && capturaFechaFinal !== undefined){
       console.log("array ejecucion ", arrayEjecucion);
       console.log("array detenidos ", arrayDetenidos);
       console.log("array completos ", arrayCompletos);
-      Mantenimiento.count({"$and": [{"fechaInicio":{"$gte":capturaFechaInicial}},{"fechaInicio":{"$lte":capturaFechaFinal}}, {cliente:body.cliente}]}, (err, conteo)=>{
+      Mantenimiento.count({"$and": [{"fechaInicio":{"$gte":capturaFechaInicial}},{"fechaInicio":{"$lte":fechaFinal23Horasmas}}, {cliente:body.cliente}]}, (err, conteo)=>{
         res.status(200).json({
           ok:true,
           fechas : arrayfechas,
@@ -147,7 +152,12 @@ app.post('/donasolici', (req, res, next)=>{
   var fechaInicial = new Date(body.fechaInicial);
   var fechaFinal = new Date(body.fechaFinal);   
 
-  Solicitud.find({"$and": [{"date":{"$gte":fechaInicial}},{"date":{"$lte":fechaFinal}}, {cliente:body.cliente}]})
+  var v23horasparafechafinal = 86364000;
+  var suma = fechaFinal.getTime() + v23horasparafechafinal;
+  var fechaFinal23Horasmas = new Date(suma)
+  console.log("yesss");
+
+  Solicitud.find({"$and": [{"date":{"$gte":fechaInicial}},{"date":{"$lte":fechaFinal23Horasmas}}, {cliente:body.cliente}]})
       .populate('cliente', 'nombre')
       .exec((err, solicitudes)=>{
           if(err){
@@ -157,7 +167,7 @@ app.post('/donasolici', (req, res, next)=>{
                   errors:err
                });  
           }
-          Solicitud.count({"$and": [{"date":{"$gte":fechaInicial}},{"date":{"$lte":fechaFinal}},  {cliente:body.cliente}]})
+          Solicitud.count({"$and": [{"date":{"$gte":fechaInicial}},{"date":{"$lte":fechaFinal23Horasmas}},  {cliente:body.cliente}]})
               .exec((err, conteo)=>{
                   res.status(200).json({
                       ok:true,
