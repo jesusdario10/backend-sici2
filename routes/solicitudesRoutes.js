@@ -140,8 +140,12 @@ app.post('/solicitudesfecha', (req, res, next)=>{
    
     var fechaInicial = new Date(body.fechaInicial);
     var fechaFinal = new Date(body.fechaFinal);   
+    var v23horasparafechafinal = 86364000;
+    var suma = fechaFinal.getTime()+v23horasparafechafinal
+    var fechaFinal23Horasmas = new Date(suma)
+    
 
-    Solicitud.find({"$and": [{"date":{"$gte":fechaInicial}},{"date":{"$lte":fechaFinal}}]})
+    Solicitud.find({"$and": [{"date":{"$gte":fechaInicial}},{"date":{"$lte":fechaFinal23Horasmas}}]})
         .populate('cliente', 'nombre')
         .exec((err, solicitudes)=>{
             if(err){
@@ -151,7 +155,7 @@ app.post('/solicitudesfecha', (req, res, next)=>{
                     errors:err
                  });  
             }
-            Solicitud.count({"$and": [{"date":{"$gte":fechaInicial}},{"date":{"$lte":fechaFinal}}]})
+            Solicitud.count({"$and": [{"date":{"$gte":fechaInicial}},{"date":{"$lte":fechaFinal23Horasmas}}]})
                 .exec((err, conteo)=>{
                     res.status(200).json({
                         ok:true,

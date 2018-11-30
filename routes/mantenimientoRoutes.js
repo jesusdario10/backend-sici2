@@ -131,12 +131,10 @@ app.post('/generar/trop/activa/manten/:id',    (req, res, next)=>{
        });
       }
       var clienteS = solicitud[0].cliente;
-      solicitud[0].fechaInicial = fechaini;
-      
-      
-     
-      
-       solicitud[0].save((err, guardada)=>{
+      console.log("aqui vendra el clienteeeeee");
+      console.log(clienteS);
+      solicitud[0].fechaInicial = fechaini;  
+      solicitud[0].save((err, guardada)=>{
         if(err){
           res.status(500).json({
             ok:false,
@@ -180,7 +178,7 @@ app.post('/generar/trop/activa/manten/:id',    (req, res, next)=>{
             }
           });
         }//for2       
-      }//for1
+      }//for1*/
       res.status(200).send({message:"SE GENERARON LOS MANTENIMIENTOS"})
     });
   });
@@ -430,34 +428,18 @@ app.post('/manten/entre/fechas', (req, res, next)=>{
   var body = req.body;
   var capturaFechaInicial = new Date(body.fechaInicial);
   var capturaFechaFinal =  new Date(body.fechaFinal);
-  console.log("este es el body del mantenimiento");
-  
+  var v23horasparafechafinal = 86364000;
+  var suma = capturaFechaFinal.getTime()+v23horasparafechafinal
+  console.log("yesss");
+ 
 
-  if(capturaFechaInicial == undefined && capturaFechaFinal == undefined || body.fechaInicial == '' && body.fechaFinal == '' ){
-    console.log("ambos vacios");
-      capturaFechaInicial = new Date('2018-01-01');
-      capturaFechaFinal = new Date('2080-01-01');
-    console.log("1");
-}
+
 //==========SI EL USUARIO ENVIA TANTO LA FECHA INICIAL COMO LA FINAL ====//
 if(capturaFechaInicial !== undefined && capturaFechaFinal !== undefined){
     capturaFechaInicial = new Date(body.fechaInicial);
-    capturaFechaFinal = new Date(body.fechaFinal);
-    console.log("2");
+    capturaFechaFinal11noche = new Date(suma);
+    console.log(capturaFechaFinal11noche);
 }
-//=================SI ELVIA SOLO LA FECHA FINAL========================//
-if(capturaFechaInicial == undefined && capturaFechaFinal !== undefined){
-    capturaFechaInicial = new Date('2018-01-01');
-    capturaFechaFinal = new Date(body.fechaFinal);
-    console.log("3");
-}
-//=================SI ELVIA SOLO LA FECHA INICIAL========================//
-if(capturaFechaInicial !== undefined && capturaFechaFinal == undefined){
-    capturaFechaInicial = new Date(body.fechaInicial);
-    capturaFechaFinal = new Date('2080-01-01');
-   console.log("4");
-}
-
 
   /*
     1-milIni        = convirtiendo a minisegundos la fecha inicial
@@ -471,7 +453,7 @@ if(capturaFechaInicial !== undefined && capturaFechaFinal == undefined){
     8-arrayfechas   = contendra las fechas que se generaron en el for                  
   */
   var milIni = capturaFechaInicial.getTime();
-  var milFin = capturaFechaFinal.getTime();
+  var milFin = capturaFechaFinal11noche.getTime();
   var diferencia = milFin - milIni;
   const dia = 86400000;
   var dia2 = dia
@@ -486,8 +468,7 @@ if(capturaFechaInicial !== undefined && capturaFechaFinal == undefined){
   var arrayCompletos = [];
   
 
-
-  Mantenimiento.find({"$and": [{"fechaInicio":{"$gte":capturaFechaInicial}},{"fechaInicio":{"$lte":capturaFechaFinal}}]})
+  Mantenimiento.find({"$and": [{"fechaInicio":{"$gte":capturaFechaInicial}},{"fechaInicio":{"$lte":capturaFechaFinal11noche}}]})
     .populate('tipovalvula', 'nombre')
     .exec((err, mantenimientos)=>{
     

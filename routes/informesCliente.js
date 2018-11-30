@@ -33,32 +33,12 @@ app.post('/lineamanten', (req, res, next)=>{
   var capturaFechaFinal =  new Date(body.fechaFinal);
   console.log("este es el body del mantenimiento");
   
-
-  if(capturaFechaInicial == undefined && capturaFechaFinal == undefined || body.fechaInicial == '' && body.fechaFinal == '' ){
-    console.log("ambos vacios");
-      capturaFechaInicial = new Date('2018-01-01');
-      capturaFechaFinal = new Date('2080-01-01');
-    console.log("1");
-}
 //==========SI EL USUARIO ENVIA TANTO LA FECHA INICIAL COMO LA FINAL ====//
 if(capturaFechaInicial !== undefined && capturaFechaFinal !== undefined){
     capturaFechaInicial = new Date(body.fechaInicial);
     capturaFechaFinal = new Date(body.fechaFinal);
     console.log("2");
 }
-//=================SI ELVIA SOLO LA FECHA FINAL========================//
-if(capturaFechaInicial == undefined && capturaFechaFinal !== undefined){
-    capturaFechaInicial = new Date('2018-01-01');
-    capturaFechaFinal = new Date(body.fechaFinal);
-    console.log("3");
-}
-//=================SI ELVIA SOLO LA FECHA INICIAL========================//
-if(capturaFechaInicial !== undefined && capturaFechaFinal == undefined){
-    capturaFechaInicial = new Date(body.fechaInicial);
-    capturaFechaFinal = new Date('2080-01-01');
-   console.log("4");
-}
-
 
   /*
     1-milIni        = convirtiendo a minisegundos la fecha inicial
@@ -88,7 +68,7 @@ if(capturaFechaInicial !== undefined && capturaFechaFinal == undefined){
   
 
 
-  Mantenimiento.find({"$and": [{"fechaInicio":{"$gte":capturaFechaInicial}},{"fechaInicio":{"$lte":capturaFechaFinal}},{cliente:body.cliente}]})
+  Mantenimiento.find({"$and": [{"fechaInicio":{"$gte":capturaFechaInicial}},{"fechaInicio":{"$lte":capturaFechaFinal}},{"cliente":body.cliente}]})
     .populate('tipovalvula', 'nombre')
     .exec((err, mantenimientos)=>{
     
